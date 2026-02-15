@@ -7,8 +7,15 @@ let _loading = false; // 加载数据时设为 true，避免保存
 
 // 保存计划
 function savePlansToStorage() {
-    if (_loading) return; // 加载数据时不保存
-    localStorage.setItem('zmdgraph_plans', JSON.stringify(planRows));
+    console.log('保存计划:', planRows);
+    if (_loading) return;
+    try {
+        const data = JSON.stringify(planRows);
+        localStorage.setItem('zmdgraph_plans', data);
+        console.log('计划已保存', planRows);
+    } catch (e) {
+        console.error('保存失败', e);
+    }
 }
 
 // 保存库存
@@ -26,22 +33,27 @@ function saveStockToStorage() {
 //加载计划
 function loadPlansFromStorage() {
     const stored = localStorage.getItem('zmdgraph_plans');
-    if (!stored) return;
-
-    _loading = true;
-    const plans = JSON.parse(stored);
-    const tbody = document.getElementById('planBody');
-    tbody.innerHTML = ''; // 清空现有行
-    planRows = [];         // 清空数据
-
-    plans.forEach(p => {
-        // 调用 addPlanRow 并传入 skipSave = true
-        addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true);
-    });
-
-    _loading = false;
-    updateSummaryRows(); // 重新计算合计
-    savePlansToStorage();
+    if (!stored) {
+        console.log('无存储数据');
+        return;
+    }
+    try {
+        const plans = JSON.parse(stored);
+        console.log('加载计划', plans);
+        _loading = true;
+        const tbody = document.getElementById('planBody');
+        tbody.innerHTML = '';
+        planRows = [];
+        plans.forEach(p => {
+            addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true);
+        });
+        _loading = false;
+        updateSummaryRows();
+        savePlansToStorage(); // 确保存储与 planRows 同步
+    } catch (e) {
+        console.error('加载失败', e);
+        _loading = false;
+    }
 }
 
 //加载库存
@@ -244,7 +256,7 @@ function updateMissingRow() {
 }
 
 // 添加计划行
-function addPlanRow(operator, project, curLv, tarLv, materialObj) {
+function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = false) {
     const tbody = document.getElementById('planBody');
     const row = document.createElement('tr');
 

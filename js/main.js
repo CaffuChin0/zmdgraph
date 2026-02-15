@@ -1,7 +1,66 @@
 // ==================== 全局变量 ====================
 let planRows = [];
+let _loading = false; // 加载数据时设为 true，避免保存
 
 // ==================== DOM 操作函数 ====================
+
+
+// 保存计划
+function savePlansToStorage() {
+    if (_loading) return; // 加载数据时不保存
+    localStorage.setItem('zmdgraph_plans', JSON.stringify(planRows));
+}
+
+// 保存库存
+function saveStockToStorage() {
+    if (_loading) return;
+    const stockInputs = document.querySelectorAll('.stock-input');
+    const stockData = {};
+    stockInputs.forEach(input => {
+        const mat = input.dataset.material;
+        if (mat) stockData[mat] = input.value;
+    });
+    localStorage.setItem('zmdgraph_stock', JSON.stringify(stockData));
+}
+
+//加载计划
+function loadPlansFromStorage() {
+    const stored = localStorage.getItem('zmdgraph_plans');
+    if (!stored) return;
+
+    _loading = true;
+    const plans = JSON.parse(stored);
+    const tbody = document.getElementById('planBody');
+    tbody.innerHTML = ''; // 清空现有行
+    planRows = [];         // 清空数据
+
+    plans.forEach(p => {
+        // 调用 addPlanRow 并传入 skipSave = true
+        addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true);
+    });
+
+    _loading = false;
+    updateSummaryRows(); // 重新计算合计
+    savePlansToStorage();
+}
+
+//加载库存
+function loadStockFromStorage() {
+    const stored = localStorage.getItem('zmdgraph_stock');
+    if (!stored) return;
+    _loading = true;
+    const stockData = JSON.parse(stored);
+    const stockInputs = document.querySelectorAll('.stock-input');
+    stockInputs.forEach(input => {
+        const mat = input.dataset.material;
+        if (mat && stockData.hasOwnProperty(mat)) {
+            input.value = stockData[mat];
+        }
+    });
+    updateExpValues();
+    updateMissingRow();
+    _loading = false;
+}
 
 // 动态生成表头（包含图标）
 function renderTableHeader() {
@@ -56,12 +115,14 @@ function createSummaryRows() {
             input.className = 'stock-input stock-value';
             input.dataset.material = mat;
             input.addEventListener('input', function() {
+                if (_loading) return;
                 // 如果是经验卡输入，更新经验值；否则直接更新缺少
                 if (["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体"].includes(mat)) {
                     updateExpValues();
                 } else {
                     updateMissingRow();
                 }
+                saveStockToStorage();
             });
             td.appendChild(input);
         }
@@ -212,6 +273,7 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj) {
             planRows.splice(index, 1);
             tbody.removeChild(row);
             updateSummaryRows();
+            savePlansToStorage();
         }
     };
     tdRemove.appendChild(removeBtn);
@@ -287,6 +349,7 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj) {
     });
 
     updateSummaryRows();
+    if (!skipSave) savePlansToStorage();
 }
 
 function hideZeroColumns() {
@@ -313,6 +376,8 @@ window.onload = function() {
     createSummaryRows();
     updateExpValues(); // 初始化经验值显示
     hideZeroColumns(); // 初始隐藏
+    loadPlansFromStorage(); // 最后加载存储计划的数据
+    loadStockFromStorage(); // 最后加载存储库存的数据
 
     const operatorSelect = document.getElementById('operatorSelect');
     CHARACTER_LIST.forEach(op => {
@@ -391,6 +456,6 @@ window.onload = function() {
     });
 
     document.getElementById('addRowBtn').addEventListener('click', function() {
-        alert("手动添加行功能暂未实现，请使用计算按钮添加。");
+        alert("手动添加行功能暂未实现，请使用计算按钮添加。（别问，这个按钮纯用来占位的）");
     });
 };

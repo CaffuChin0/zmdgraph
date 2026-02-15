@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>终末地养成规划计算器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>📊 终末地养成规划计算器</h1>
+
+    <!-- 数据说明 -->
+    <div class="panel" style="background: #e2f0d9;">
+        <p style="margin:0; color: #1e7e34;">
+            📌 使用前必看：
+            技能等级专精1为10级，专精2为11级，专精3为12级。
+            装配适配：绿装=0，蓝装=1，紫装=2，金装=3。
+            干员精英化不包含装配适配，请自行添加。
+            未完待续...
+        </p>
+    </div>
+
+    <!-- 输入区域 -->
+    <div class="panel">
+        <div class="form-row">
+            <label>干员：</label>
+            <select id="operatorSelect">
+                <option value="">请选择</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>升级项目：</label>
+            <select id="projectSelect" disabled>
+                <option value="">先选干员</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>现等级：</label>
+            <input type="number" id="currentLevel" min="0" max="90" value="">
+            <label>目标等级：</label>
+            <input type="number" id="targetLevel" min="0" max="90" value="">
+            <button id="calcBtn">计算材料</button>
+        </div>
+    </div>
+
+    <!-- 计划列表 -->
+    <div class="panel">
+        <h3>培养计划列表 <button id="addRowBtn" style="margin-left:20px;">➕ 添加新行</button></h3>
+        <div style="overflow-x: auto;">
+            <table id="planTable" style="table-layout: auto; width: max-content;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>移除</th>
+                        <th>完成</th>
+                        <th>隐藏</th>
+                        <th>干员</th>
+                        <th>升级项目</th>
+                        <th>现等级</th>
+                        <th>目标等级</th>
+                        <!-- 材料列由 JS 动态生成 -->
+                    </tr>
+                </thead>
+                <tbody id="planBody"></tbody>
+                <tbody id="summaryRows"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ⚠️ 还在更新，别急
+    </div>
+
+    <!-- 引入 JavaScript 文件（注意顺序） -->
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

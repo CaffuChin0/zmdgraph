@@ -1,0 +1,150 @@
+/* 全局样式 */
+body {
+    font-family: 'Microsoft YaHei', sans-serif;
+    margin: 20px;
+    background: #f8f9fa;
+}
+h1 {
+    color: #2c3e50;
+}
+.panel {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+.form-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+label {
+    font-weight: bold;
+    min-width: 80px;
+}
+select, input {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+select {
+    min-width: 200px;
+}
+input[type=number] {
+    width: 80px;
+}
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+button:hover {
+    background: #0056b3;
+}
+.footer-note {
+    margin-top: 20px;
+    color: #6c757d;
+    font-size: 13px;
+}
+
+/* 表格容器（负责横向滚动） */
+.table-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+/* 表格主体 */
+#planTable {
+    table-layout: fixed;
+    width: max-content;
+    border-collapse: separate;
+    background: white;
+    border: 1px solid #dee2e6;
+}
+
+/* 前8列固定宽度 */
+#planTable th:nth-child(1), #planTable td:nth-child(1) { width: 80px; }
+#planTable th:nth-child(2), #planTable td:nth-child(2) { width: 70px; }
+#planTable th:nth-child(3), #planTable td:nth-child(3) { width: 60px; }
+#planTable th:nth-child(4), #planTable td:nth-child(4) { width: 60px; }
+#planTable th:nth-child(5), #planTable td:nth-child(5) { width: 100px; }
+#planTable th:nth-child(6), #planTable td:nth-child(6) { width: 150px; }
+#planTable th:nth-child(7), #planTable td:nth-child(7) { width: 80px; }
+#planTable th:nth-child(8), #planTable td:nth-child(8) { width: 80px; }
+
+/* 粘性定位（冻结窗格） */
+#planTable th:nth-child(1), #planTable td:nth-child(1) { position: sticky; left: 0; background: white; z-index: 10; }
+#planTable th:nth-child(2), #planTable td:nth-child(2) { position: sticky; left: 80px; background: white; z-index: 10; }
+#planTable th:nth-child(3), #planTable td:nth-child(3) { position: sticky; left: 150px; background: white; z-index: 10; }
+#planTable th:nth-child(4), #planTable td:nth-child(4) { position: sticky; left: 210px; background: white; z-index: 10; }
+#planTable th:nth-child(5), #planTable td:nth-child(5) { position: sticky; left: 270px; background: white; z-index: 10; }
+#planTable th:nth-child(6), #planTable td:nth-child(6) { position: sticky; left: 370px; background: white; z-index: 10; }
+#planTable th:nth-child(7), #planTable td:nth-child(7) { position: sticky; left: 520px; background: white; z-index: 10; }
+#planTable th:nth-child(8), #planTable td:nth-child(8) { position: sticky; left: 600px; background: white; z-index: 10; }
+
+/* 表头特殊背景 */
+#planTable thead th {
+    background: #e9ecef;
+    z-index: 11; /* 高于固定列 */
+}
+
+/* 单元格样式 */
+#planTable th, #planTable td {
+    padding: 8px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+}
+
+/* 特殊行背景 */
+.inventory-row {
+    background: #fff3cd;
+}
+.missing-row {
+    background: #f8d7da;
+}
+.total-row {
+    background: #d1ecf1;
+    font-weight: bold;
+}
+
+/* 库存输入框 */
+.stock-input {
+    width: 60px;
+}
+
+/* 隐藏行（打勾） */
+.hidden-row td {
+    text-decoration: line-through;
+    color: #999;
+}
+
+/* 完成行透明度 */
+.completed-row td {
+    opacity: 0.5;
+}
+
+/* 图片样式 */
+#planTable th img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+#planTable td img {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}

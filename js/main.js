@@ -463,7 +463,7 @@ window.onload = function() {
             document.getElementById('currentLevel').value = '';
             document.getElementById('targetLevel').value = '';
         } else {
-            alert("未找到对应材料数据，可能需要实现累加或补充数据库。");
+            alert("未找到对应材料数据，请确定是否填写正确，如填写正确无数据，请反馈bug给底下联系人");
         }
     });
 

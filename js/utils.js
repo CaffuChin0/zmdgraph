@@ -1,4 +1,4 @@
-// ==================== 工具函数 ====================
+// 通用工具函数
 
 // 获取干员的技能名数组
 function getSkillsForOperator(op) {
@@ -23,6 +23,148 @@ function mapSkillToGeneric(干员, 项目) {
         }
     }
     return 项目;
+}
+
+// 计算干员等级从现等级到目标等级的总材料（跨越多个精X等级）
+function calculateLevelMaterials(干员, 现等级, 目标等级) {
+    let total = {};
+    MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
+
+    const levelStages = [
+        { project: "精0等级", min: 1, max: 20 },
+        { project: "精1等级", min: 20, max: 40 },
+        { project: "精2等级", min: 40, max: 60 },
+        { project: "精3等级", min: 60, max: 80 },
+        { project: "精4等级", min: 80, max: 90 }
+    ];
+
+    for (let stage of levelStages) {
+        if (现等级 < stage.max && 目标等级 > stage.min) {
+            let stageCur = Math.max(现等级, stage.min);
+            let stageTar = Math.min(目标等级, stage.max);
+            if (stageCur < stageTar) {
+                const stageRes = calculateMaterials(干员, stage.project, stageCur, stageTar);
+                if (stageRes) {
+                    MATERIAL_COLUMNS.forEach(mat => {
+                        total[mat] += stageRes[mat] || 0;
+                    });
+                }
+            }
+        }
+    }
+    return total;
+}
+
+// 计算完整的角色等级升级材料（包括升级、精英阶段、装备适配）
+function calculateFullLevelMaterials(干员, 现等级, 目标等级, eliteDone, adaptDone) {
+    let total = {};
+    MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
+
+    // 计算升级素材（精0~4）
+    const levelResult = calculateLevelMaterials(干员, 现等级, 目标等级);
+    if (levelResult) {
+        MATERIAL_COLUMNS.forEach(mat => total[mat] += levelResult[mat] || 0);
+    }
+
+    // 精英阶段材料（阈值：20,40,60,80）
+    const eliteThresholds = [20, 40, 60, 80];
+    const eliteStages = [
+        { from: 0, to: 1 },
+        { from: 1, to: 2 },
+        { from: 2, to: 3 },
+        { from: 3, to: 4 }
+    ];
+    for (let i = 0; i < eliteThresholds.length; i++) {
+        const threshold = eliteThresholds[i];
+        // 只有当目标等级达到或超过该阈值，且当前等级未达到该阈值，且精英化未完成时，才添加该精英阶段
+        if (目标等级 >= threshold && 现等级 < threshold && !eliteDone) {
+            const eliteRes = calculateMaterials(干员, "精英阶段", eliteStages[i].from, eliteStages[i].to);
+            if (eliteRes) {
+                MATERIAL_COLUMNS.forEach(mat => total[mat] += eliteRes[mat] || 0);
+            }
+        }
+    }
+
+    // 装备适配材料（阈值 20,40,60）
+    const adaptThresholds = [20, 40, 60];
+    const adaptStages = [
+        { from: 0, to: 1 },
+        { from: 1, to: 2 },
+        { from: 2, to: 3 }
+    ];
+    for (let i = 0; i < adaptThresholds.length; i++) {
+        const threshold = adaptThresholds[i];
+        // 只有当目标等级达到或超过该阈值，且当前等级未达到该阈值，且装备适配未完成时，才添加该装备适配阶段
+        if (目标等级 >= threshold && 现等级 < threshold && !adaptDone) {
+            const adaptRes = calculateMaterials(干员, "装备适配", adaptStages[i].from, adaptStages[i].to);
+            if (adaptRes) {
+                MATERIAL_COLUMNS.forEach(mat => total[mat] += adaptRes[mat] || 0);
+            }
+        }
+    }
+
+    return total;
+}
+
+// 计算精英阶段材料（从当前等级到目标等级，仅当跨越阈值且未完成时）
+function calculateEliteMaterials(干员, 现等级, 目标等级, eliteDone) {
+    let total = {};
+    MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
+    const eliteThresholds = [20, 40, 60, 80];
+    const eliteStages = [
+        { from: 0, to: 1 },
+        { from: 1, to: 2 },
+        { from: 2, to: 3 },
+        { from: 3, to: 4 }
+    ];
+    for (let i = 0; i < eliteThresholds.length; i++) {
+        const threshold = eliteThresholds[i];
+        if (目标等级 >= threshold) {
+            if (现等级 < threshold) {
+                // 未来阶段
+                const stageRes = calculateMaterials(干员, "精英阶段", eliteStages[i].from, eliteStages[i].to);
+                if (stageRes) {
+                    MATERIAL_COLUMNS.forEach(mat => total[mat] += stageRes[mat] || 0);
+                }
+            } else if (现等级 === threshold && !eliteDone) {
+                // 当前阶段且未完成
+                const stageRes = calculateMaterials(干员, "精英阶段", eliteStages[i].from, eliteStages[i].to);
+                if (stageRes) {
+                    MATERIAL_COLUMNS.forEach(mat => total[mat] += stageRes[mat] || 0);
+                }
+            }
+        }
+    }
+    return total;
+}
+
+// 计算装备适配材料
+function calculateAdaptMaterials(干员, 现等级, 目标等级, adaptDone) {
+    let total = {};
+    MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
+    const adaptThresholds = [20, 40, 60];
+    const adaptStages = [
+        { from: 0, to: 1 },
+        { from: 1, to: 2 },
+        { from: 2, to: 3 }
+    ];
+    for (let i = 0; i < adaptThresholds.length; i++) {
+        const threshold = adaptThresholds[i];
+        if (目标等级 >= threshold) {
+            if (现等级 < threshold) {
+                const stageRes = calculateMaterials(干员, "装备适配", adaptStages[i].from, adaptStages[i].to);
+                if (stageRes) {
+                    MATERIAL_COLUMNS.forEach(mat => total[mat] += stageRes[mat] || 0);
+                }
+            } else if (现等级 === threshold && !adaptDone) {
+                const stageRes = calculateMaterials(干员, "装备适配", adaptStages[i].from, adaptStages[i].to);
+                if (stageRes) {
+                    MATERIAL_COLUMNS.forEach(mat => total[mat] += stageRes[mat] || 0);
+                }
+            }
+        }
+    }
+    return total;
 }
 
 // 累加计算材料

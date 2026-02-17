@@ -148,3 +148,37 @@ button:hover {
     object-fit: cover;
     border-radius: 4px;
 }
+/* 导航栏 */
+.nav-bar {
+    background: #fff;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.nav-bar a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+.nav-bar a.active {
+    color: #0056b3;
+    border-bottom: 2px solid #0056b3;
+}
+
+/* 页面容器 */
+.page {
+    display: none;
+}
+.page.active {
+    display: block;
+}
+
+/* 干员添加页面的项目网格 */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+}

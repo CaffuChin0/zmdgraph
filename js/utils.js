@@ -169,6 +169,7 @@ function calculateAdaptMaterials(干员, 现等级, 目标等级, adaptDone) {
 
 // 累加计算材料
 function calculateMaterials(干员, 项目, 现等级, 目标等级) {
+
     const generic = mapSkillToGeneric(干员, 项目);
 
     // 匹配干员特有行
@@ -230,4 +231,10 @@ function calculateMaterials(干员, 项目, 现等级, 目标等级) {
 
     const hasAny = MATERIAL_COLUMNS.some(mat => total[mat] > 0);
     return hasAny ? total : null;
+}
+
+// 将装备适配等级映射为名称
+function mapAdaptLevelToColor(level) {
+    const colors = ['绿装', '蓝装', '紫装', '金装'];
+    return colors[level] !== undefined ? colors[level] : level; // 若超出范围则返回原数字
 }

@@ -13,8 +13,8 @@
     <div class="nav-bar">
         <a href="#home" class="nav-link" data-page="home">🏠 首页</a>
         <a href="#table" class="nav-link" data-page="table">📋 培养表</a>
-        <!-- 暂时隐藏
         <a href="#operator" class="nav-link" data-page="operator">➕ 干员添加</a>
+        <!-- 暂时隐藏
         <a href="#stock" class="nav-link" data-page="stock">📦 库存</a>
         <a href="#settings" class="nav-link" data-page="settings">⚙️ 设置</a>
         -->
@@ -113,28 +113,50 @@
     <!-- 干员添加页面 -->
     <div id="page-operator" class="page">
         <div class="panel">
-            <h2>干员一键计算</h2>
+            <h2>干员一键规划</h2>
             <div class="form-row">
                 <label>干员：</label>
                 <select id="addOperatorSelect"></select>
             </div>
 
             <!-- 快捷选项 -->
-            <div class="quick-options">
-                <button id="addFullPlan">从0到全满</button>
+            <div class="quick-options" style="margin: 15px 0;">
+                <button class="quick-btn" data-target="full">全满</button>
             </div>
 
-            <!-- 项目复选框组（由JS动态生成） -->
-            <div id="projectChecklist" class="project-grid">
-                <!-- 这里将动态填充可勾选的项目 -->
+            <!-- 横向表格：表头为项目，两行分别为目前等级和培养目标 -->
+            <div style="overflow-x: auto;">
+                <table id="operatorProjectTable" style="width: max-content; border-collapse: collapse; margin-bottom:20px;">
+                    <thead id="operatorProjectHeader">
+                        <!-- 动态生成列名 -->
+                    </thead>
+                    <tbody id="operatorProjectBody">
+                        <!-- 动态生成两行：目前等级行和培养目标行 -->
+                    </tbody>
+                </table>
             </div>
 
-            <div class="form-row">
-                <label>当前等级：</label><input type="number" id="addCurrentLevel" value="0" min="0" max="90">
-                <label>目标等级：</label><input type="number" id="addTargetLevel" value="1" min="0" max="90">
-            </div>
+            <!-- 计算需求按钮 -->
+            <button id="calcDemandBtn" style="margin-right:10px;">📊 计算需求</button>
+            <button id="addAllToPlannerBtn">➕ 添加全部到计算器</button>
 
-            <button id="addSelectedToPlanner">添加全部到计算器</button>
+            <!-- 需求材料列表 -->
+            <div id="demandMaterials" style="margin-top:20px;">
+                <h3>需求材料</h3>
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>升级项目</th>
+                            <th>现等级</th>
+                            <th>目标等级</th>
+                            <th>所需材料</th>
+                        </tr>
+                    </thead>
+                    <tbody id="demandBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

@@ -65,6 +65,24 @@ function createSummaryRows() {
                 }
                 saveStockToStorage();
             });
+            input.addEventListener('input', function() {
+                // 钳位：确保不小于0
+                let val = parseInt(this.value, 10);
+                if (isNaN(val)) {
+                    this.value = 0;
+                } else {
+                    const min = parseInt(this.min, 10);
+                    if (val < min) this.value = min;
+                    // 无上限，不做处理
+                }
+                if (_loading) return;
+                if (["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体"].includes(mat)) {
+                    updateExpValues();
+                } else {
+                    updateMissingRow();
+                }
+                saveStockToStorage();
+            });
             td.appendChild(input);
         }
         stockRow.appendChild(td);
@@ -263,12 +281,20 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
 
     // 现等级
     const tdCur = document.createElement('td');
-    tdCur.textContent = curLv;
+    if (project.includes('装备适配')) {
+        tdCur.textContent = mapAdaptLevelToColor(curLv);
+    } else {
+        tdCur.textContent = curLv;
+    }
     row.appendChild(tdCur);
 
     // 目标等级
     const tdTar = document.createElement('td');
-    tdTar.textContent = tarLv;
+    if (project.includes('装备适配')) {
+        tdTar.textContent = mapAdaptLevelToColor(tarLv);
+    } else {
+        tdTar.textContent = tarLv;
+    }
     row.appendChild(tdTar);
 
     // 材料列
@@ -314,6 +340,24 @@ function hideZeroColumns() {
         document.querySelectorAll(`#summaryRows td[data-material="${mat}"]`).forEach(td => td.style.display = shouldHide ? 'none' : '');
     });
 }
+
+// 钳位等级输入
+function clampInput(input) {
+    input.addEventListener('input', function() {
+        let val = parseInt(this.value, 10);
+        if (isNaN(val)) {
+            this.value = this.min;
+            return;
+        }
+        const min = parseInt(this.min, 10);
+        const max = parseInt(this.max, 10);
+        if (val < min) this.value = min;
+        else if (val > max) this.value = max;
+    });
+}
+
+clampInput(document.getElementById('currentLevel'));
+clampInput(document.getElementById('targetLevel'));
 
 // 加载计划
 function loadPlansFromStorage() {
@@ -499,12 +543,35 @@ function initPlanner() {
         levelOptions.style.display = 'block';
     }
 
+    // 根据干员和项目获取等级范围
+    function getProjectRange(干员, 项目) {
+        const generic = mapSkillToGeneric(干员, 项目);
+        if (generic.startsWith('技能')) {
+            return { min: 1, max: 12 };
+        }
+        if (generic === '角色等级') return { min: 1, max: 90 };
+        if (generic === '精英阶段') return { min: 0, max: 4 };
+        if (generic === '装备适配') return { min: 0, max: 3 };
+        if (generic === '能力值（信赖）') return { min: 0, max: 4 };
+        if (generic === '天赋') return { min: 0, max: 4 };
+        if (generic === '基建') return { min: 0, max: 4 };
+        // 其他通用项目（如精0等级等）已被过滤，但以防万一
+        return { min: 0, max: 90 };
+    }
+
     // 监听当前等级输入变化
     currentLevelInput.addEventListener('input', updateCheckboxVisibility);
 
     operatorSelect.addEventListener('change', function() {
         document.getElementById('currentLevel').value = '';
         document.getElementById('targetLevel').value = '';
+        
+        const curInput = document.getElementById('currentLevel');
+        const tarInput = document.getElementById('targetLevel');
+        curInput.min = 1;
+        curInput.max = 90;
+        tarInput.min = 1;
+        tarInput.max = 90;
 
         const op = this.value;
         if (!op) {
@@ -532,15 +599,24 @@ function initPlanner() {
     projectSelect.addEventListener('change', function() {
         const selectedProj = this.value;
         const selectedOp = operatorSelect.value;
+        const curInput = document.getElementById('currentLevel');
+        const tarInput = document.getElementById('targetLevel');
         if (!selectedProj || !selectedOp) {
-            document.getElementById('currentLevel').value = '';
-            document.getElementById('targetLevel').value = '';
+            curInput.value = '';
+            tarInput.value = '';
             updateCheckboxVisibility();
             return;
         }
+        // 获取项目范围
+        const range = getProjectRange(selectedOp, selectedProj);
+        curInput.min = range.min;
+        curInput.max = range.max;
+        tarInput.min = range.min;
+        tarInput.max = range.max;
+
         if (selectedProj === '角色等级') {
-            document.getElementById('currentLevel').value = 1;
-            document.getElementById('targetLevel').value = 90;
+            curInput.value = 1;
+            tarInput.value = 90;
             updateCheckboxVisibility();
             return;
         }
@@ -553,11 +629,11 @@ function initPlanner() {
             const minRow = matchingRows.reduce((min, row) => {
                 return row.现等级 < min.现等级 ? row : min;
             }, matchingRows[0]);
-            document.getElementById('currentLevel').value = minRow.现等级;
-            document.getElementById('targetLevel').value = minRow.目标等级;
+            curInput.value = minRow.现等级;
+            tarInput.value = minRow.目标等级;
         } else {
-            document.getElementById('currentLevel').value = '';
-            document.getElementById('targetLevel').value = '';
+            curInput.value = '';
+            tarInput.value = '';
         }
         updateCheckboxVisibility();
     });
@@ -592,7 +668,9 @@ function initPlanner() {
             const adapt2Done = adapt2Check ? adapt2Check.checked : false;
             const adaptInfo = calculateAdaptWithRange(op, cur, tar, adapt0Done, adapt1Done, adapt2Done);
             if (adaptInfo && Object.values(adaptInfo.materials).some(v => v > 0)) {
-                addPlanRow(op, `角色等级-装备适配(${adaptInfo.from}→${adaptInfo.to})`, adaptInfo.from, adaptInfo.to, adaptInfo.materials);
+                const fromColor = mapAdaptLevelToColor(adaptInfo.from);
+                const toColor = mapAdaptLevelToColor(adaptInfo.to);
+                addPlanRow(op, `角色等级-装备适配(${fromColor}→${toColor})`, adaptInfo.from, adaptInfo.to, adaptInfo.materials);
             }
         } else {
             const result = calculateMaterials(op, proj, cur, tar);

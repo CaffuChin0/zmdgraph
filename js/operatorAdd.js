@@ -470,5 +470,23 @@ function addAllToPlanner() {
     });
 
     alert(`已添加 ${window.currentDemands.length} 个项目到培养表`);
+
+    // 重置干员添加页面
+    const addOperatorSelect = document.getElementById('addOperatorSelect');
+    if (addOperatorSelect) {
+        addOperatorSelect.value = ''; // 设为“请选择”
+        addOperatorSelect.dispatchEvent(new Event('change')); // 触发 change 事件，自动清空表格
+    }
+
+    // 清空需求表格
+    const demandBody = document.getElementById('demandBody');
+    if (demandBody) demandBody.innerHTML = '';
+
+    // 重置全局变量
+    currentOperator = '';
+    projectColumns = [];
+    window.currentDemands = [];
+
+    // 跳转到培养表
     window.location.hash = '#table';
 }

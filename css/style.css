@@ -302,4 +302,22 @@ input[type=number] {
     #planTable {
         min-width: 800px; /* 确保计划表可横向滚动 */
     }
+
+    /* 材料列最小宽度，确保表格可横向滚动 */
+    #planTable td[data-material] {
+        min-width: 80px;
+    }
+
+    /* 强制父容器滚动 */
+    @media screen and (max-width: 768px) {
+        .table-container,
+        #page-table div[style*="overflow-x: auto"] {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        /* 可适当减小材料列宽度以显示更多列 */
+        #planTable td[data-material] {
+            min-width: 60px;
+        }
+    }
 }

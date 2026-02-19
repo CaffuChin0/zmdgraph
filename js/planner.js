@@ -333,7 +333,7 @@ function hideZeroColumns() {
 
         // 隐藏主表格表头
         const th = document.querySelector(`#planTable thead th[data-material="${mat}"]`);
-        if (th) th.style.display = shouldHide ? 'none' : '';
+        if (th) th.style.setProperty('display', shouldHide ? 'none' : '', 'important');
 
         // 隐藏计划行中的对应列
         document.querySelectorAll(`#planBody td[data-material="${mat}"]`).forEach(td => td.style.display = shouldHide ? 'none' : '');

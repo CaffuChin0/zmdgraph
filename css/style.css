@@ -278,9 +278,15 @@ input[type=number] {
 
 /* 移动端适配 */
 @media screen and (max-width: 768px) {
-    /* 取消所有粘性定位，避免渲染问题 */
+    /* 只锁定第一列 */
     #planTable th:nth-child(1),
-    #planTable td:nth-child(1),
+    #planTable td:nth-child(1) {
+        position: sticky !important;
+        left: 0 !important;
+        background: white !important;
+        z-index: 10 !important;
+    }
+    /* 取消其他列锁定，避免渲染问题 */
     #planTable th:nth-child(2),
     #planTable td:nth-child(2),
     #planTable th:nth-child(3),

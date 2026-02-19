@@ -61,12 +61,7 @@ button:hover {
     max-width: 100%;
 }
 
-/* 培养表容器 - 强制横向滚动 */
-.plan-table-wrapper {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch; /* 流畅滚动 */
-    width: 100%;
-}
+
 
 /* 表格主体 */
 #planTable {
@@ -95,20 +90,6 @@ button:hover {
 #planTable th[data-material] {
     width: 80px;
     min-width: 80px;
-}
-
-/* 移动端优化 */
-@media screen and (max-width: 768px) {
-    .plan-table-wrapper {
-        overflow-x: auto !important;
-    }
-    #planTable td[data-material] {
-        min-width: 60px;
-    }
-    #planTable th[data-material] {
-        width: 60px;
-        min-width: 60px;
-    }
 }
 
 /* 粘性定位（冻结窗格） */
@@ -297,6 +278,29 @@ input[type=number] {
 
 /* 移动端适配 */
 @media screen and (max-width: 768px) {
+    /* 取消所有粘性定位，避免渲染问题 */
+    #planTable th:nth-child(1),
+    #planTable td:nth-child(1),
+    #planTable th:nth-child(2),
+    #planTable td:nth-child(2),
+    #planTable th:nth-child(3),
+    #planTable td:nth-child(3),
+    #planTable th:nth-child(4),
+    #planTable td:nth-child(4),
+    #planTable th:nth-child(5),
+    #planTable td:nth-child(5),
+    #planTable th:nth-child(6),
+    #planTable td:nth-child(6),
+    #planTable th:nth-child(7),
+    #planTable td:nth-child(7),
+    #planTable th:nth-child(8),
+    #planTable td:nth-child(8) {
+        position: static !important;
+        left: auto !important;
+        background: inherit !important;
+        z-index: auto !important;
+    }
+
     /* 干员添加页面的项目表格容器 */
     #operatorProjectTable {
         font-size: 16px; /* 适当增大字体方便点击 */
@@ -330,13 +334,28 @@ input[type=number] {
     .table-container {
         overflow-x: auto;
     }
+
+    /* 培养表容器 - 强制横向滚动 */
+    .plan-table-wrapper {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch; /* 流畅滚动 */
+        width: 100%;
+    }
+
     #planTable {
         min-width: 800px; /* 确保计划表可横向滚动 */
     }
 
+    /* 材料列表头保持可见 */
+    #planTable th[data-material] {
+        width: 60px;
+        min-width: 60px;
+        display: table-cell !important;
+    }
+
     /* 材料列最小宽度，确保表格可横向滚动 */
     #planTable td[data-material] {
-        min-width: 80px;
+        min-width: 60px;
     }
 
     /* 强制父容器滚动 */

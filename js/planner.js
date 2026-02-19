@@ -324,10 +324,12 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
 
 // 隐藏零材料列
 function hideZeroColumns() {
+    const hasPlans = planRows.length > 0; // 是否有计划行
     MATERIAL_COLUMNS.forEach(mat => {
         const totalCell = document.querySelector(`.total-value[data-material="${mat}"]`);
         const total = totalCell ? parseFloat(totalCell.textContent) || 0 : 0;
-        const shouldHide = total === 0;
+        // 没有计划行时不隐藏任何列，否则只隐藏合计为零的列
+        const shouldHide = hasPlans && total === 0;
 
         // 隐藏主表格表头
         const th = document.querySelector(`#planTable thead th[data-material="${mat}"]`);

@@ -87,6 +87,9 @@ button:hover {
 #planTable th:nth-child(7), #planTable td:nth-child(7) { width: 80px; }
 #planTable th:nth-child(8), #planTable td:nth-child(8) { width: 80px; }
 
+#planTable th[data-material] {
+    min-width: 80px;
+}
 /* 材料列最小宽度 */
 #planTable td[data-material] {
     min-width: 80px;

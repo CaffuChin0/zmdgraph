@@ -371,9 +371,6 @@ function setupLevelInputClamp(input) {
 setupLevelInputClamp(document.getElementById('currentLevel'));
 setupLevelInputClamp(document.getElementById('targetLevel'));
 
-setupLevelInputClamp(document.getElementById('currentLevel'));
-setupLevelInputClamp(document.getElementById('targetLevel'));
-
 // 加载计划
 function loadPlansFromStorage() {
     const stored = localStorage.getItem('zmdgraph_plans');

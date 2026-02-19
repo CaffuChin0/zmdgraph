@@ -263,3 +263,43 @@ input[type=number] {
     -moz-appearance: textfield;
     appearance: textfield;
 }
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    /* 干员添加页面的项目表格容器 */
+    #operatorProjectTable {
+        font-size: 16px; /* 适当增大字体方便点击 */
+    }
+    #operatorProjectTable input[type=number] {
+        width: 50px; /* 缩小输入框宽度以适应屏幕 */
+        font-size: 14px;
+    }
+
+    /* 需求材料表格容器 */
+    #demandMaterials {
+        overflow-x: auto;
+    }
+    #demandMaterials table {
+        min-width: 600px; /* 保证表格内容不被压缩，允许横向滚动 */
+        font-size: 13px;
+    }
+    #demandMaterials td {
+        white-space: nowrap; /* 材料列内的图标和文字不换行，保持一行显示 */
+        padding: 6px 4px;
+    }
+    #demandMaterials td:last-child {
+        white-space: normal; /* 材料列内容较多，允许换行 */
+    }
+    #demandMaterials img {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* 培养表页面表格容器 */
+    .table-container {
+        overflow-x: auto;
+    }
+    #planTable {
+        min-width: 800px; /* 确保计划表可横向滚动 */
+    }
+}

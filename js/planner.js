@@ -341,23 +341,38 @@ function hideZeroColumns() {
     });
 }
 
-// 钳位等级输入
-function clampInput(input) {
-    input.addEventListener('input', function() {
+// 为等级输入框添加失去焦点钳位
+function setupLevelInputClamp(input) {
+    input.addEventListener('blur', function() {
         let val = parseInt(this.value, 10);
-        if (isNaN(val)) {
-            this.value = this.min;
-            return;
-        }
         const min = parseInt(this.min, 10);
         const max = parseInt(this.max, 10);
+        if (isNaN(val)) {
+            // 如果为空，尝试恢复上次有效值
+            const lastVal = this.getAttribute('data-last-value');
+            if (lastVal !== null && !isNaN(parseInt(lastVal, 10))) {
+                this.value = lastVal;
+            } else {
+                this.value = min;
+            }
+            return;
+        }
+        // 保存当前有效值
+        this.setAttribute('data-last-value', this.value);
         if (val < min) this.value = min;
         else if (val > max) this.value = max;
+        // 值可能被修正，更新复选框状态
+        if (typeof updateCheckboxVisibility === 'function') {
+            updateCheckboxVisibility();
+        }
     });
 }
 
-clampInput(document.getElementById('currentLevel'));
-clampInput(document.getElementById('targetLevel'));
+setupLevelInputClamp(document.getElementById('currentLevel'));
+setupLevelInputClamp(document.getElementById('targetLevel'));
+
+setupLevelInputClamp(document.getElementById('currentLevel'));
+setupLevelInputClamp(document.getElementById('targetLevel'));
 
 // 加载计划
 function loadPlansFromStorage() {
@@ -568,6 +583,12 @@ function initPlanner() {
         
         const curInput = document.getElementById('currentLevel');
         const tarInput = document.getElementById('targetLevel');
+        curInput.value = '';
+        tarInput.value = '';
+        // 清除上次保存的值
+        curInput.removeAttribute('data-last-value');
+        tarInput.removeAttribute('data-last-value');
+         // 重置范围
         curInput.min = 1;
         curInput.max = 90;
         tarInput.min = 1;
@@ -617,6 +638,9 @@ function initPlanner() {
         if (selectedProj === '角色等级') {
             curInput.value = 1;
             tarInput.value = 90;
+            // 保存初始值
+            curInput.setAttribute('data-last-value', curInput.value);
+            tarInput.setAttribute('data-last-value', tarInput.value);
             updateCheckboxVisibility();
             return;
         }
@@ -628,12 +652,17 @@ function initPlanner() {
         if (matchingRows.length > 0) {
             const minRow = matchingRows.reduce((min, row) => {
                 return row.现等级 < min.现等级 ? row : min;
-            }, matchingRows[0]);
+            }, matchingRows[0]);        
             curInput.value = minRow.现等级;
             tarInput.value = minRow.目标等级;
+            // 保存初始值
+            curInput.setAttribute('data-last-value', curInput.value);
+            tarInput.setAttribute('data-last-value', tarInput.value);
         } else {
             curInput.value = '';
             tarInput.value = '';
+            curInput.removeAttribute('data-last-value');
+            tarInput.removeAttribute('data-last-value');
         }
         updateCheckboxVisibility();
     });

@@ -130,11 +130,11 @@ function generateHorizontalTable(operator) {
         }
         input.classList.add('project-cur');
         input.dataset.key = col.key;
-        // 添加钳位监听
-        input.addEventListener('input', function(e) {
+        // 修改：失去焦点时进行钳位
+        input.addEventListener('blur', function(e) {
             let val = parseInt(this.value, 10);
             if (isNaN(val)) {
-                this.value = this.min;
+                this.value = this.min; // 若为空，恢复最小值
                 return;
             }
             const min = parseInt(this.min, 10);
@@ -167,8 +167,8 @@ function generateHorizontalTable(operator) {
         }
         input.classList.add('project-tar');
         input.dataset.key = col.key;
-        // 添加钳位监听
-        input.addEventListener('input', function(e) {
+        // 修改：失去焦点时进行钳位
+        input.addEventListener('blur', function(e) {
             let val = parseInt(this.value, 10);
             if (isNaN(val)) {
                 this.value = this.min;

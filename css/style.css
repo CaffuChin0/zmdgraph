@@ -61,6 +61,13 @@ button:hover {
     max-width: 100%;
 }
 
+/* 培养表容器 - 强制横向滚动 */
+.plan-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch; /* 流畅滚动 */
+    width: 100%;
+}
+
 /* 表格主体 */
 #planTable {
     table-layout: fixed;
@@ -79,6 +86,21 @@ button:hover {
 #planTable th:nth-child(6), #planTable td:nth-child(6) { width: 150px; }
 #planTable th:nth-child(7), #planTable td:nth-child(7) { width: 80px; }
 #planTable th:nth-child(8), #planTable td:nth-child(8) { width: 80px; }
+
+/* 材料列最小宽度 */
+#planTable td[data-material] {
+    min-width: 80px;
+}
+
+/* 移动端优化 */
+@media screen and (max-width: 768px) {
+    .plan-table-wrapper {
+        overflow-x: auto !important;
+    }
+    #planTable td[data-material] {
+        min-width: 60px;
+    }
+}
 
 /* 粘性定位（冻结窗格） */
 #planTable th:nth-child(1), #planTable td:nth-child(1) { position: sticky; left: 0; background: white; z-index: 10; }

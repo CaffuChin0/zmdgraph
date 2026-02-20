@@ -786,6 +786,20 @@ function initPlanner() {
         return { materials: total, from: minFrom, to: maxTo };
     }
 
+    // 一键移除全部
+    document.getElementById('removeAllBtn')?.addEventListener('click', function() {
+        if (planRows.length === 0) {
+            alert('没有计划可移除');
+            return;
+        }
+        if (confirm('确定要移除所有计划吗？此操作不可撤销。')) {
+            planRows = [];
+            document.getElementById('planBody').innerHTML = '';
+            updateSummaryRows();
+            savePlansToStorage();
+        }
+    });
+
     // 初次渲染（表头、汇总行）
     renderTableHeader();
     createSummaryRows();

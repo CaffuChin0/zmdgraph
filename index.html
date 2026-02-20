@@ -34,8 +34,7 @@
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-17</strong>：新增支持多页面切换、优化培养表界面。</li>
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-18</strong>：优化升级项目界面。</li>
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-19</strong>：新增干员添加页面、支持一键拉满同个干员进行计算。修复bug:表格自动填写最小值导致无法自己输入对应现有等级</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-21</strong>: 新增夜间模式。</li>
-
+                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-21</strong>：新增夜间模式，支持培养表一键清除所有计划。</li>
             </ul>
         </div>
     </div>
@@ -92,7 +91,13 @@
 
         <!-- 培养计划列表 -->
         <div class="panel">
-            <h3>培养计划列表 <button id="addRowBtn">➕ 添加新行</button></h3>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <h3 style="margin: 0;">培养计划列表</h3>
+                <div>
+                    <button id="addRowBtn">➕ 添加新行</button>
+                    <button id="removeAllBtn" style="background-color: #dc3545; margin-left: 10px;">🗑️ 一键移除全部</button>
+                </div>
+            </div>
             <div class="plan-table-wrapper" style="overflow-x: auto;">
                 <table id="planTable">
                     <thead>

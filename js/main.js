@@ -19,4 +19,27 @@ window.onload = function() {
     // 加载存储数据
     loadPlansFromStorage(); // 在 planner.js 中定义
     loadStockFromStorage(); // 在 stock.js 中定义
+
+    // 夜间模式
+    initNightMode();
 };
+
+// 夜间模式切换
+function initNightMode() {
+    const toggleBtn = document.getElementById('nightModeToggle');
+    if (!toggleBtn) return;
+
+    // 检查本地存储
+    const isNight = localStorage.getItem('zmdgraph_night_mode') === 'true';
+    if (isNight) {
+        document.body.classList.add('night-mode');
+        toggleBtn.textContent = '☀️';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('night-mode');
+        const nowNight = document.body.classList.contains('night-mode');
+        localStorage.setItem('zmdgraph_night_mode', nowNight);
+        toggleBtn.textContent = nowNight ? '☀️' : '🌙';
+    });
+}

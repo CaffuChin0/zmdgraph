@@ -391,6 +391,9 @@ function calculateDemandHorizontal() {
     // 渲染需求表格（带图标）
     const demandBody = document.getElementById('demandBody');
     demandBody.innerHTML = '';
+    // 初始化材料总和对象
+    const totalMaterials = {};
+    MATERIAL_COLUMNS.forEach(mat => totalMaterials[mat] = 0);
     demands.forEach(d => {
         const row = document.createElement('tr');
 
@@ -449,8 +452,70 @@ function calculateDemandHorizontal() {
         }
         row.appendChild(tdMat);
 
+        // 累加材料到总和
+        MATERIAL_COLUMNS.forEach(mat => {
+            totalMaterials[mat] += d.materials[mat] || 0;
+        });
+
         demandBody.appendChild(row);
     });
+
+    
+    // 添加总和行
+    if (demands.length > 0) {
+        const totalRow = document.createElement('tr');
+        totalRow.className = 'total-sum-row'; // 可选样式
+
+        // 项目列
+        const tdProj = document.createElement('td');
+        tdProj.textContent = '总和';
+        tdProj.style.fontWeight = 'bold';
+        totalRow.appendChild(tdProj);
+
+        // 现等级列（留空）
+        const tdFrom = document.createElement('td');
+        tdFrom.textContent = '-';
+        totalRow.appendChild(tdFrom);
+
+        // 目标等级列（留空）
+        const tdTo = document.createElement('td');
+        tdTo.textContent = '-';
+        totalRow.appendChild(tdTo);
+
+        // 所需材料列
+        const tdMat = document.createElement('td');
+        const matSpans = [];
+        MATERIAL_COLUMNS.forEach(mat => {
+            if (totalMaterials[mat] > 0) {
+                const div = document.createElement('div');
+                div.style.display = 'inline-block';
+                div.style.marginRight = '20px';
+                div.style.marginBottom = '4px';
+                div.style.whiteSpace = 'nowrap';
+                
+                const icon = document.createElement('img');
+                icon.src = MATERIAL_ICONS[mat] || DEFAULT_ICON;
+                icon.style.width = '24px';
+                icon.style.height = '24px';
+                icon.style.marginRight = '6px';
+                icon.style.verticalAlign = 'middle';
+                div.appendChild(icon);
+                
+                const text = document.createTextNode(`${mat} ×${totalMaterials[mat]}`);
+                div.appendChild(text);
+                
+                matSpans.push(div);
+            }
+        });
+        if (matSpans.length === 0) {
+            tdMat.textContent = '无';
+        } else {
+            matSpans.forEach(div => tdMat.appendChild(div));
+        }
+        totalRow.appendChild(tdMat);
+
+        demandBody.appendChild(totalRow);
+    }
 
     // 存储需求数据供添加使用
     window.currentDemands = demands;

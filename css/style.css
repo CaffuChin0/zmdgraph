@@ -378,6 +378,15 @@ input[type=number] {
     }
 }
 
+/* 干员添加总和表格样式 */
+.total-sum-row {
+    background-color: #d4edda; /* 浅绿 */
+    font-weight: bold;
+}
+.night-mode .total-sum-row {
+    background-color: #2a5a2a; /* 深绿 */
+}
+
 /* 夜间模式变量 */
 .night-mode {
     --bg-color: #1a1a1a;

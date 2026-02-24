@@ -18,6 +18,7 @@
         <a href="#table" class="nav-link" data-page="table">📋 培养表</a>
         <a href="#operator" class="nav-link" data-page="operator">➕ 干员添加</a>
         <a href="#weapon" class="nav-link" data-page="weapon">🗡️ 武器添加</a>
+        <a href="#plan" class="nav-link" data-page="plan">📊 规划</a>
         <a href="#stock" class="nav-link" data-page="stock">📦 库存</a>
         <!-- 暂时隐藏 -->
         <!-- <a href="#settings" class="nav-link" data-page="settings">⚙️ 设置</a> -->
@@ -172,71 +173,79 @@
         </div>
     </div>
 
-<!-- 武器添加页面 -->
-<div id="page-weapon" class="page">
-    <div class="panel">
-        <h2>武器一键规划</h2>
-        <div class="form-row">
-            <label>星级：</label>
-            <select id="weaponStarSelect">
-                <option value="0">全部</option>
-                <option value="3">3星</option>
-                <option value="4">4星</option>
-                <option value="5">5星</option>
-                <option value="6">6星</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label>武器：</label>
-            <select id="weaponSelect">
-                <!-- 武器列表由 JS 动态生成 -->
-            </select>
-        </div>
+    <!-- 武器添加页面 -->
+    <div id="page-weapon" class="page">
+        <div class="panel">
+            <h2>武器一键规划</h2>
+            <div class="form-row">
+                <label>星级：</label>
+                <select id="weaponStarSelect">
+                    <option value="0">全部</option>
+                    <option value="3">3星</option>
+                    <option value="4">4星</option>
+                    <option value="5">5星</option>
+                    <option value="6">6星</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>武器：</label>
+                <select id="weaponSelect">
+                    <!-- 武器列表由 JS 动态生成 -->
+                </select>
+            </div>
 
-        <!-- 快捷选项 -->
-        <div class="quick-options" style="margin: 15px 0;">
-            <button class="quick-btn" data-target="break0">20级突破0</button>
-            <button class="quick-btn" data-target="break1">40级突破1</button>
-            <button class="quick-btn" data-target="break2">60级突破2</button>
-            <button class="quick-btn" data-target="break3">80级突破3</button>
-            <button class="quick-btn" data-target="full">90级突破4</button>
-        </div>
+            <!-- 快捷选项 -->
+            <div class="quick-options" style="margin: 15px 0;">
+                <button class="quick-btn" data-target="break0">20级突破0</button>
+                <button class="quick-btn" data-target="break1">40级突破1</button>
+                <button class="quick-btn" data-target="break2">60级突破2</button>
+                <button class="quick-btn" data-target="break3">80级突破3</button>
+                <button class="quick-btn" data-target="full">90级突破4</button>
+            </div>
 
-        <!-- 突破阶段 + 等级 -->
-        <div style="overflow-x: auto;">
-            <table id="weaponProjectTable" style="width: max-content; border-collapse: collapse; margin-bottom:20px;">
-                <thead id="weaponProjectHeader">
-                    <!-- 动态生成列名：突破阶段、等级 -->
-                </thead>
-                <tbody id="weaponProjectBody">
-                    <!-- 目前等级、培养目标 -->
-                </tbody>
-            </table>
-        </div>
+            <!-- 突破阶段 + 等级 -->
+            <div style="overflow-x: auto;">
+                <table id="weaponProjectTable" style="width: max-content; border-collapse: collapse; margin-bottom:20px;">
+                    <thead id="weaponProjectHeader">
+                        <!-- 动态生成列名：突破阶段、等级 -->
+                    </thead>
+                    <tbody id="weaponProjectBody">
+                        <!-- 目前等级、培养目标 -->
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- 计算需求按钮 -->
-        <button id="calcWeaponDemandBtn" style="margin-right:10px;">📊 计算需求</button>
-        <button id="addWeaponToPlannerBtn">➕ 添加全部到计算器</button>
+            <!-- 计算需求按钮 -->
+            <button id="calcWeaponDemandBtn" style="margin-right:10px;">📊 计算需求</button>
+            <button id="addWeaponToPlannerBtn">➕ 添加全部到计算器</button>
 
-        <!-- 需求材料列表 -->
-        <div id="weaponDemandMaterials" style="margin-top:20px;">
-            <h3>需求材料</h3>
-            <table style="width:100%; border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <th>升级项目</th>
-                        <th>现等级</th>
-                        <th>目标等级</th>
-                        <th>所需材料</th>
-                    </tr>
-                </thead>
-                <tbody id="weaponDemandBody">
-                    <!-- 动态生成 -->
-                </tbody>
-            </table>
+            <!-- 需求材料列表 -->
+            <div id="weaponDemandMaterials" style="margin-top:20px;">
+                <h3>需求材料</h3>
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>升级项目</th>
+                            <th>现等级</th>
+                            <th>目标等级</th>
+                            <th>所需材料</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weaponDemandBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
+
+    <!-- 规划页面 -->
+    <div id="page-plan" class="page">
+        <div class="panel">
+            <h2>规划 - 体力计算</h2>
+            <p style="color: #6c757d; padding: 20px; text-align: center;">功能开发中，敬请期待...</p>
+        </div>
+    </div>
 
     <!-- 库存页面 -->
     <div id="page-stock" class="page">

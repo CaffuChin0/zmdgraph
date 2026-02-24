@@ -43,7 +43,7 @@ function createSummaryRows() {
     MATERIAL_COLUMNS.forEach(mat => {
         const td = document.createElement('td');
         td.setAttribute('data-material', mat);
-        if (mat === "精一经验值" || mat === "精三经验值") {
+        if (mat === "精一经验值" || mat === "精三经验值" || mat === "武器经验值") {
             const span = document.createElement('span');
             span.className = 'stock-value exp-display';
             span.dataset.material = mat;
@@ -57,15 +57,6 @@ function createSummaryRows() {
             input.className = 'stock-input stock-value';
             input.dataset.material = mat;
             input.addEventListener('input', function() {
-                if (_loading) return;
-                if (["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体"].includes(mat)) {
-                    updateExpValues();
-                } else {
-                    updateMissingRow();
-                }
-                saveStockToStorage();
-            });
-            input.addEventListener('input', function() {
                 // 钳位：确保不小于0
                 let val = parseInt(this.value, 10);
                 if (isNaN(val)) {
@@ -73,10 +64,12 @@ function createSummaryRows() {
                 } else {
                     const min = parseInt(this.min, 10);
                     if (val < min) this.value = min;
-                    // 无上限，不做处理
                 }
                 if (_loading) return;
-                if (["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体"].includes(mat)) {
+                // 经验材料包括干员和武器的经验材料
+                const expMaterials = ["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体",
+                                    "武器检查单元","武器检查装置","武器检查套组"];
+                if (expMaterials.includes(mat)) {
                     updateExpValues();
                 } else {
                     updateMissingRow();
@@ -164,6 +157,7 @@ function updateSummaryRows() {
 
 // 根据经验卡库存更新精一/精三经验值显示
 function updateExpValues() {
+    // 干员经验
     const 高级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="高级作战记录"]')?.value) || 0;
     const 中级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="中级作战记录"]')?.value) || 0;
     const 初级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="初级作战记录"]')?.value) || 0;
@@ -177,6 +171,16 @@ function updateExpValues() {
     const exp3Span = document.querySelector('.stock-value[data-material="精三经验值"]');
     if (exp1Span) exp1Span.textContent = 精一经验值;
     if (exp3Span) exp3Span.textContent = 精三经验值;
+
+    // 武器经验
+    const 武器检查单元 = parseFloat(document.querySelector('.stock-input[data-material="武器检查单元"]')?.value) || 0;
+    const 武器检查装置 = parseFloat(document.querySelector('.stock-input[data-material="武器检查装置"]')?.value) || 0;
+    const 武器检查套组 = parseFloat(document.querySelector('.stock-input[data-material="武器检查套组"]')?.value) || 0;
+
+    const 武器经验值 = 武器检查套组 * 10000 + 武器检查装置 * 1000 + 武器检查单元 * 200;
+
+    const weaponExpSpan = document.querySelector('.stock-value[data-material="武器经验值"]');
+    if (weaponExpSpan) weaponExpSpan.textContent = 武器经验值;
 
     updateMissingRow(); // 重新计算缺少
 }
@@ -215,7 +219,8 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
     const avatarImg = document.createElement('img');
     avatarImg.style.maxWidth = '50px';
     avatarImg.style.maxHeight = '50px';
-    avatarImg.src = OPERATOR_AVATARS[operator] || DEFAULT_AVATAR;
+    // 优先使用武器头像，否则使用干员头像，最后默认头像
+    avatarImg.src = WEAPON_AVATARS[operator] || OPERATOR_AVATARS[operator] || DEFAULT_AVATAR;
     tdAvatar.appendChild(avatarImg);
     row.appendChild(tdAvatar);
 

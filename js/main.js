@@ -10,11 +10,12 @@ window.onload = function() {
     initRouter(); // 在 router.js 中定义
 
     // 初始化各页面
-    initPlanner();   // 在 planner.js 中定义
+    initPlanner(); // 在 planner.js 中定义
     initOperatorAdd(); // 在 operatorAdd.js 中定义
+    initWeaponAdd(); // 在 weaponAdd.js 中定义
     // 暂时隐藏其他页面的初始化
-    //initStock();     // 在 stock.js 中定义
-    //initSettings();  // 在 settings.js 中定义
+    //initStock(); // 在 stock.js 中定义
+    //initSettings(); // 在 settings.js 中定义
 
     // 加载存储数据
     loadPlansFromStorage(); // 在 planner.js 中定义

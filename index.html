@@ -17,6 +17,7 @@
         <a href="#home" class="nav-link" data-page="home">🏠 首页</a>
         <a href="#table" class="nav-link" data-page="table">📋 培养表</a>
         <a href="#operator" class="nav-link" data-page="operator">➕ 干员添加</a>
+        <a href="#weapon" class="nav-link" data-page="weapon">🗡️ 武器添加</a>
         <!-- 暂时隐藏 -->
         <!-- <a href="#stock" class="nav-link" data-page="stock">📦 库存</a>
         <a href="#settings" class="nav-link" data-page="settings">⚙️ 设置</a> -->
@@ -35,6 +36,7 @@
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-18</strong>：优化升级项目界面。</li>
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-19</strong>：新增干员添加页面、支持一键拉满同个干员进行计算。修复bug:表格自动填写最小值导致无法自己输入对应现有等级</li>
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-21</strong>：适配手机端界面，新增夜间模式，支持培养表一键清除所有计划。</li>
+                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-22</strong>：在一键计算时新增一行总和确认该计算需求。添加武器养成界面，支持武器素材计算。</li>               
             </ul>
         </div>
     </div>
@@ -169,6 +171,72 @@
         </div>
     </div>
 
+<!-- 武器添加页面 -->
+<div id="page-weapon" class="page">
+    <div class="panel">
+        <h2>武器一键规划</h2>
+        <div class="form-row">
+            <label>星级：</label>
+            <select id="weaponStarSelect">
+                <option value="0">全部</option>
+                <option value="3">3星</option>
+                <option value="4">4星</option>
+                <option value="5">5星</option>
+                <option value="6">6星</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>武器：</label>
+            <select id="weaponSelect">
+                <!-- 武器列表由 JS 动态生成 -->
+            </select>
+        </div>
+
+        <!-- 快捷选项 -->
+        <div class="quick-options" style="margin: 15px 0;">
+            <button class="quick-btn" data-target="break0">20级突破0</button>
+            <button class="quick-btn" data-target="break1">40级突破1</button>
+            <button class="quick-btn" data-target="break2">60级突破2</button>
+            <button class="quick-btn" data-target="break3">80级突破3</button>
+            <button class="quick-btn" data-target="full">90级突破4</button>
+        </div>
+
+        <!-- 突破阶段 + 等级 -->
+        <div style="overflow-x: auto;">
+            <table id="weaponProjectTable" style="width: max-content; border-collapse: collapse; margin-bottom:20px;">
+                <thead id="weaponProjectHeader">
+                    <!-- 动态生成列名：突破阶段、等级 -->
+                </thead>
+                <tbody id="weaponProjectBody">
+                    <!-- 目前等级、培养目标 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 计算需求按钮 -->
+        <button id="calcWeaponDemandBtn" style="margin-right:10px;">📊 计算需求</button>
+        <button id="addWeaponToPlannerBtn">➕ 添加全部到计算器</button>
+
+        <!-- 需求材料列表 -->
+        <div id="weaponDemandMaterials" style="margin-top:20px;">
+            <h3>需求材料</h3>
+            <table style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>升级项目</th>
+                        <th>现等级</th>
+                        <th>目标等级</th>
+                        <th>所需材料</th>
+                    </tr>
+                </thead>
+                <tbody id="weaponDemandBody">
+                    <!-- 动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
     <!-- 库存页面 -->
     <div id="page-stock" class="page">
         <div class="panel">
@@ -205,8 +273,9 @@
     <script src="js/data.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/router.js"></script>        <!-- 依赖 DOM，但无其他依赖 -->
-    <script src="js/planner.js"></script>       <!-- 依赖 data.js, utils.js, router.js 中的函数（可选） -->
+    <script src="js/planner.js"></script>       <!-- 依赖 data.js, utils.js, router.js 中的函数 -->
     <script src="js/operatorAdd.js"></script>   <!-- 依赖 data.js, utils.js, planner.js 中的 addPlanRow 等 -->
+    <script src="js/weaponAdd.js"></script>     <!-- 依赖 data.js, planner.js 中的函数 -->
     <script src="js/stock.js"></script>         <!-- 依赖 planner.js 中的 updateExpValues 等 -->
     <script src="js/settings.js"></script>      <!-- 依赖 planner.js 中的 addPlanRow 等 -->
     <script src="js/main.js"></script>          <!-- 最后执行，调用各 init 函数 -->

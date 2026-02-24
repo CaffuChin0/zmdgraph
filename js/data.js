@@ -561,6 +561,112 @@ const DATABASE = [
     // 其他干员特有升级数据（例如每个干员技能专精）... 后续如有新增请继续添加
 ];
 
+// ==================== 武器数据 ====================
+// 武器经验材料转换系数（用于界面显示，计算时直接使用经验值）
+const WEAPON_EXP_VALUES = {
+    "武器检查单元": 200,
+    "武器检查装置": 1000,
+    "武器检查套组": 10000
+};
+
+// 武器升级分段经验与折金票（1-20级详细，20-90后续补充，此处先提供到20级）
+const WEAPON_LEVEL_STAGES = [
+    { from: 1, to: 7, 武器经验值: 140, 折金票: 0 },
+    { from: 7, to: 9, 武器经验值: 190, 折金票: 0 },
+    { from: 9, to: 10, 武器经验值: 150, 折金票: 0 },
+    { from: 10, to: 11, 武器经验值: 200, 折金票: 10 },
+    { from: 11, to: 12, 武器经验值: 270, 折金票: 10 },
+    { from: 12, to: 13, 武器经验值: 370, 折金票: 10 },
+    { from: 13, to: 14, 武器经验值: 480, 折金票: 20 },
+    { from: 14, to: 15, 武器经验值: 620, 折金票: 30 },
+    { from: 15, to: 16, 武器经验值: 780, 折金票: 50 },
+    { from: 16, to: 17, 武器经验值: 990, 折金票: 70 },
+    { from: 17, to: 18, 武器经验值: 1250, 折金票: 100 },
+    { from: 18, to: 19, 武器经验值: 1550, 折金票: 140 },
+    { from: 19, to: 20, 武器经验值: 1900, 折金票: 200 },
+    { from: 20, to: 21, 武器经验值: 2360, 折金票: 240 },
+    { from: 21, to: 22, 武器经验值: 2960, 折金票: 300 },
+    { from: 22, to: 23, 武器经验值: 3280, 折金票: 330 },
+    { from: 23, to: 24, 武器经验值: 3580, 折金票: 360 },
+    { from: 24, to: 25, 武器经验值: 3850, 折金票: 390 },
+    { from: 25, to: 26, 武器经验值: 4090, 折金票: 410 },
+    { from: 26, to: 27, 武器经验值: 4300, 折金票: 430 },
+    { from: 27, to: 28, 武器经验值: 4600, 折金票: 460 },
+    { from: 28, to: 29, 武器经验值: 4810, 折金票: 490 },
+    { from: 29, to: 30, 武器经验值: 4940, 折金票: 500 },
+    { from: 30, to: 31, 武器经验值: 5090, 折金票: 510 },
+    { from: 31, to: 32, 武器经验值: 5250, 折金票: 530 },
+    { from: 32, to: 33, 武器经验值: 5480, 折金票: 550 },
+    { from: 33, to: 34, 武器经验值: 5670, 折金票: 570 },
+    { from: 34, to: 35, 武器经验值: 5820, 折金票: 590 },
+    { from: 35, to: 36, 武器经验值: 5910, 折金票: 600 },
+    { from: 36, to: 37, 武器经验值: 6010, 折金票: 610 },
+    { from: 37, to: 38, 武器经验值: 6110, 折金票: 620 },
+    { from: 38, to: 39, 武器经验值: 6220, 折金票: 630 },
+    { from: 39, to: 40, 武器经验值: 6320, 折金票: 640 },
+    { from: 40, to: 41, 武器经验值: 6430, 折金票: 650 },
+    { from: 41, to: 42, 武器经验值: 6620, 折金票: 670 },
+    { from: 42, to: 43, 武器经验值: 6810, 折金票: 690 },
+    { from: 43, to: 44, 武器经验值: 7010, 折金票: 710 },
+    { from: 44, to: 45, 武器经验值: 7220, 折金票: 730 },
+    { from: 45, to: 46, 武器经验值: 7410, 折金票: 750 },
+    { from: 46, to: 47, 武器经验值: 7690, 折金票: 770 },
+    { from: 47, to: 48, 武器经验值: 7960, 折金票: 800 },
+    { from: 48, to: 49, 武器经验值: 8260, 折金票: 830 },
+    { from: 49, to: 50, 武器经验值: 8580, 折金票: 860 },
+    { from: 50, to: 51, 武器经验值: 8940, 折金票: 900 },
+    { from: 51, to: 52, 武器经验值: 9320, 折金票: 940 },
+    { from: 52, to: 53, 武器经验值: 9740, 折金票: 980 },
+    { from: 53, to: 54, 武器经验值: 10190, 折金票: 1020 },
+    { from: 54, to: 55, 武器经验值: 10680, 折金票: 1070 },
+    { from: 55, to: 56, 武器经验值: 11210, 折金票: 1130 },
+    { from: 56, to: 57, 武器经验值: 11770, 折金票: 1180 },
+    { from: 57, to: 58, 武器经验值: 12380, 折金票: 1240 },
+    { from: 58, to: 59, 武器经验值: 13040, 折金票: 1310 },
+    { from: 59, to: 60, 武器经验值: 13740, 折金票: 1380 },
+    { from: 60, to: 61, 武器经验值: 14110, 折金票: 1420 },
+    { from: 61, to: 62, 武器经验值: 15870, 折金票: 1540 },
+    { from: 62, to: 63, 武器经验值: 17690, 折金票: 1670 },
+    { from: 63, to: 64, 武器经验值: 19480, 折金票: 1800 },
+    { from: 64, to: 65, 武器经验值: 21670, 折金票: 1960 },
+    { from: 65, to: 66, 武器经验值: 24220, 折金票: 2160 },
+    { from: 66, to: 67, 武器经验值: 27210, 折金票: 2390 },
+    { from: 67, to: 68, 武器经验值: 30700, 折金票: 2680 },
+    { from: 68, to: 69, 武器经验值: 34780, 折金票: 3010 },
+    { from: 69, to: 70, 武器经验值: 39510, 折金票: 3400 },
+    { from: 70, to: 71, 武器经验值: 44990, 折金票: 3860 },
+    { from: 71, to: 72, 武器经验值: 48870, 折金票: 4400 },
+    { from: 72, to: 73, 武器经验值: 53240, 折金票: 5020 },
+    { from: 73, to: 74, 武器经验值: 58140, 折金票: 5730 },
+    { from: 74, to: 75, 武器经验值: 63580, 折金票: 6560 },
+    { from: 75, to: 76, 武器经验值: 69600, 折金票: 7500 },
+    { from: 76, to: 77, 武器经验值: 74420, 折金票: 8380 },
+    { from: 77, to: 78, 武器经验值: 79530, 折金票: 9350 },
+    { from: 78, to: 79, 武器经验值: 84940, 折金票: 10420 },
+    { from: 79, to: 80, 武器经验值: 90620, 折金票: 11590 },
+    { from: 80, to: 81, 武器经验值: 96570, 折金票: 12880 },
+    { from: 81, to: 82, 武器经验值: 103570, 折金票: 14400 },
+    { from: 82, to: 83, 武器经验值: 110930, 折金票: 16070 },
+    { from: 83, to: 84, 武器经验值: 118620, 折金票: 17900 },
+    { from: 84, to: 85, 武器经验值: 126650, 折金票: 19910 },
+    { from: 85, to: 86, 武器经验值: 134990, 折金票: 22090 },
+    { from: 86, to: 87, 武器经验值: 143620, 折金票: 24470 },
+    { from: 87, to: 88, 武器经验值: 152540, 折金票: 27060 },
+    { from: 88, to: 89, 武器经验值: 161720, 折金票: 29860 },
+    { from: 89, to: 90, 武器经验值: 171160, 折金票: 32900 }
+];
+
+// 武器突破通用数据（突破1-3）
+const WEAPON_BREAK_GENERAL = {
+    1: { 折金票: 2200, 强固模具: 5, 轻黯石: 3 },
+    2: { 折金票: 8500, 强固模具: 18, 中黯石: 5 },
+    3: { 折金票: 25000, 重型强固模具: 20, 重黯石: 5 }
+};
+
+// 武器突破4基础数据（作为通用行，武器特有行可覆盖）
+const WEAPON_BREAK_4_BASE = { 折金票: 90000, 重型强固模具: 30 };
+// 珍稀素材和地区特产需要武器特有数据，暂时留空
+
 // 干员头像映射
 const OPERATOR_AVATARS = {
     "伊冯": "images/avatars/伊冯.png",
@@ -594,6 +700,7 @@ const MATERIAL_ICONS = {
     "折金票": "images/icons/折金票.png",
     "精一经验值": "images/icons/精一经验值.png",
     "精三经验值": "images/icons/精三经验值.png",
+    "武器经验值": "images/icons/武器经验值.png",
     "高级认知载体": "images/icons/高级认知载体.png",
     "初级认知载体": "images/icons/初级认知载体.png",
     "高级作战记录": "images/icons/高级作战记录.png",
@@ -623,8 +730,81 @@ const MATERIAL_ICONS = {
     "星门菌": "images/icons/星门菌.png",
     "岩天使叶": "images/icons/岩天使叶.png",
     "武陵石": "images/icons/武陵石.png",
-    "存续的痕迹": "images/icons/存续的痕迹.png"
+    "存续的痕迹": "images/icons/存续的痕迹.png",
+    "武器检查单元": "images/icons/武器检查单元.png",
+    "武器检查装置": "images/icons/武器检查装置.png",
+    "武器检查套组": "images/icons/武器检查套组.png",
+    "强固模具": "images/icons/强固模具.png",
+    "重型强固模具": "images/icons/重型强固模具.png"
 };
+
+// 武器头像映射
+const WEAPON_AVATARS = {
+    "达尔霍夫7": "images/weapons/达尔霍夫7.png",
+    "奥佩罗77": "images/weapons/奥佩罗77.png",
+    "吉米尼12": "images/weapons/吉米尼12.png",
+    "佩科5": "images/weapons/佩科5.png",
+    "塔尔11": "images/weapons/塔尔11.png",
+    "工业零点一": "images/weapons/工业零点一.png",
+    "淬火者": "images/weapons/淬火者.png",
+    "天使杀手": "images/weapons/天使杀手.png",
+    "荧光雷羽": "images/weapons/荧光雷羽.png",
+    "全自动骇新星": "images/weapons/全自动骇新星.png",
+    "应急手段": "images/weapons/应急手段.png",
+    "寻路者道标": "images/weapons/寻路者道标.png",
+    "呼啸守卫": "images/weapons/呼啸守卫.png",
+    "长路": "images/weapons/长路.png",
+    "浪潮": "images/weapons/浪潮.png",
+    "作品：众生": "images/weapons/作品：众生.png",
+    "探骊": "images/weapons/探骊.png",
+    "终点之声": "images/weapons/终点之声.png",
+    "古渠": "images/weapons/古渠.png",
+    "O.B.J.重荷": "images/weapons/O.B.J.重荷.png",
+    "坚城铸造者": "images/weapons/坚城铸造者.png",
+    "迷失荒野": "images/weapons/迷失荒野.png",
+    "十二问": "images/weapons/十二问.png",
+    "悼亡诗": "images/weapons/悼亡诗.png",
+    "莫奈何": "images/weapons/莫奈何.png",
+    "逐鳞3.0": "images/weapons/逐鳞3.0.png",
+    "布道自由": "images/weapons/布道自由.png",
+    "向心之引": "images/weapons/向心之引.png",
+    "O.B.J.术识": "images/weapons/O.B.J.术识.png",
+    "嵌合正义": "images/weapons/嵌合正义.png",
+    "O.B.J.尖峰": "images/weapons/O.B.J.尖峰.png",
+    "理性告别": "images/weapons/理性告别.png",
+    "O.B.J.迅极": "images/weapons/O.B.J.迅极.png",
+    "钢铁余音": "images/weapons/钢铁余音.png",
+    "仰止": "images/weapons/仰止.png",
+    "O.B.J.轻芒": "images/weapons/O.B.J.轻芒.png",
+    "遗忘": "images/weapons/遗忘.png",
+    "典范": "images/weapons/典范.png",
+    "破碎君王": "images/weapons/破碎君王.png",
+    "昔日精品": "images/weapons/昔日精品.png",
+    "大雷斑": "images/weapons/大雷斑.png",
+    "骑士精神": "images/weapons/骑士精神.png",
+    "显赫声名": "images/weapons/显赫声名.png",
+    "扶摇": "images/weapons/扶摇.png",
+    "赫拉芬格": "images/weapons/赫拉芬格.png",
+    "作品：蚀迹": "images/weapons/作品：蚀迹.png",
+    "黯色火炬": "images/weapons/黯色火炬.png",
+    "爆破单元": "images/weapons/爆破单元.png",
+    "使命必达": "images/weapons/使命必达.png",
+    "沧溟星梦": "images/weapons/沧溟星梦.png",
+    "骁勇": "images/weapons/骁勇.png",
+    "J.E.T.": "images/weapons/J.E.T..png",
+    "负山": "images/weapons/负山.png",
+    "艺术暴君": "images/weapons/艺术暴君.png",
+    "白夜新星": "images/weapons/白夜新星.png",
+    "领航者": "images/weapons/领航者.png",
+    "楔子": "images/weapons/楔子.png",
+    "熔铸火焰": "images/weapons/熔铸火焰.png",
+    "同类相食": "images/weapons/同类相食.png",
+    "不知归": "images/weapons/不知归.png",
+    "热熔切割器": "images/weapons/热熔切割器.png",
+    "宏愿": "images/weapons/宏愿.png"
+};
+
+// 默认头像
 const DEFAULT_ICON = "images/icons/default.png";
 
 // 材料列列表

@@ -388,31 +388,48 @@ function calculateWeaponLevelMaterials(cur, tar) {
     return { 武器经验值: totalExp, 折金票: totalTicket };
 }
 
-// 将武器经验值转换为武器检查单元/装置/套组（使材料数量最少）
+// 将武器经验值转换为武器检查单元/装置/套组（优先最小溢出，其次最少材料）
 function convertExpToMaterials(exp) {
     const materials = { "武器检查套组": 0, "武器检查装置": 0, "武器检查单元": 0 };
     // 先用套组
-    materials["武器检查套组"] = Math.floor(exp / 10000);
+    const sets = Math.floor(exp / 10000);
+    materials["武器检查套组"] = sets;
     let remaining = exp % 10000;
 
-    // 对于剩余经验，枚举装置数量（允许超额），使总材料个数最少
+    // 枚举装置数量（0 到 最大所需装置数）
     let bestDevice = 0;
     let bestUnit = 0;
+    let minOverflow = Infinity;
     let minCount = Infinity;
+
     const maxDevice = Math.ceil(remaining / 1000);
     for (let d = 0; d <= maxDevice; d++) {
-        const needExp = remaining - d * 1000;
+        const deviceExp = d * 1000;
+        const needExp = remaining - deviceExp;
         let u = 0;
         if (needExp > 0) {
             u = Math.ceil(needExp / 200);
         }
-        const count = d + u;
-        if (count < minCount) {
-            minCount = count;
+        const unitExp = u * 200;
+        const totalExp = deviceExp + unitExp;
+        const overflow = totalExp - remaining; // 可能为负？但 needExp>0 时 unitExp 已确保 >= needExp，所以 totalExp >= remaining
+        // 如果 needExp <=0，则 u=0，totalExp = deviceExp，可能大于 remaining，也计算溢出
+
+        if (overflow < minOverflow) {
+            minOverflow = overflow;
             bestDevice = d;
             bestUnit = u;
+            minCount = d + u; // 记录当前最佳组合的材料数
+        } else if (overflow === minOverflow) {
+            // 溢出相同，取材料总数更少的
+            if (d + u < minCount) {
+                bestDevice = d;
+                bestUnit = u;
+                minCount = d + u;
+            }
         }
     }
+
     materials["武器检查装置"] = bestDevice;
     materials["武器检查单元"] = bestUnit;
     return materials;
@@ -472,19 +489,54 @@ function calculateWeaponDemand() {
 
     const demands = [];
 
-    // 升级材料
+    // 升级材料（按阶段分段计算）
     if (curLevel < tarLevel) {
-        const levelRes = calculateWeaponLevelMaterials(curLevel, tarLevel);
-        if (levelRes) {
-            const expMaterials = convertExpToMaterials(levelRes.武器经验值);
-            const materials = { ...expMaterials, 折金票: levelRes.折金票, 武器经验值: levelRes.武器经验值 };
-            demands.push({
-                project: `武器等级 ${curLevel}→${tarLevel}`,
-                from: curLevel,
-                to: tarLevel,
-                materials: materials
-            });
+        let totalExp = 0;
+        let totalTicket = 0;
+        const totalExpMaterials = { "武器检查套组": 0, "武器检查装置": 0, "武器检查单元": 0 };
+        const thresholds = [20, 40, 60, 80, 90];
+        let current = curLevel;
+
+        while (current < tarLevel) {
+            // 找到下一个阈值
+            let nextThreshold = thresholds.find(t => t > current);
+            if (!nextThreshold) nextThreshold = 90;
+            let stageEnd = Math.min(nextThreshold, tarLevel);
+
+            // 计算当前阶段的总经验
+            let stageExp = 0;
+            for (let lv = current; lv < stageEnd; lv++) {
+                const stage = WEAPON_LEVEL_STAGES.find(s => lv >= s.from && lv < s.to);
+                if (stage) {
+                    stageExp += stage.武器经验值;
+                    totalTicket += stage.折金票;
+                } else {
+                    alert(`武器等级 ${lv}→${lv+1} 数据缺失`);
+                    return;
+                }
+            }
+
+            totalExp += stageExp;
+            // 将阶段经验转换为材料，并累加到总材料中
+            const stageMaterials = convertExpToMaterials(stageExp);
+            for (let key in stageMaterials) {
+                totalExpMaterials[key] += stageMaterials[key];
+            }
+
+            current = stageEnd;
         }
+
+        const materials = {
+            ...totalExpMaterials,
+            "折金票": totalTicket,
+            "武器经验值": totalExp
+        };
+        demands.push({
+            project: `武器等级 ${curLevel}→${tarLevel}`,
+            from: curLevel,
+            to: tarLevel,
+            materials: materials
+        });
     }
 
     // 突破材料

@@ -43,7 +43,7 @@ function createSummaryRows() {
     MATERIAL_COLUMNS.forEach(mat => {
         const td = document.createElement('td');
         td.setAttribute('data-material', mat);
-        if (mat === "精一经验值" || mat === "精三经验值" || mat === "武器经验值") {
+        if (mat === "武器经验值" || mat === "作战记录经验值" || mat === "认知载体经验值") {
             const span = document.createElement('span');
             span.className = 'stock-value exp-display';
             span.dataset.material = mat;
@@ -155,32 +155,30 @@ function updateSummaryRows() {
     hideZeroColumns();
 }
 
-// 根据经验卡库存更新精一/精三经验值显示
+// 根据经验卡库存更新经验值显示
 function updateExpValues() {
-    // 干员经验
+    // 干员经验（作战记录）
     const 高级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="高级作战记录"]')?.value) || 0;
     const 中级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="中级作战记录"]')?.value) || 0;
     const 初级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="初级作战记录"]')?.value) || 0;
+    const 作战记录经验值 = 高级作战记录 * 10000 + 中级作战记录 * 1000 + 初级作战记录 * 200;
+    const recordSpan = document.querySelector('.stock-value[data-material="作战记录经验值"]');
+    if (recordSpan) recordSpan.textContent = 作战记录经验值;
+
+    // 干员经验（认知载体）
     const 高级认知载体 = parseFloat(document.querySelector('.stock-input[data-material="高级认知载体"]')?.value) || 0;
     const 初级认知载体 = parseFloat(document.querySelector('.stock-input[data-material="初级认知载体"]')?.value) || 0;
-
-    const 精一经验值 = 高级作战记录 * 10000 + 中级作战记录 * 1000 + 初级作战记录 * 200;
-    const 精三经验值 = 高级认知载体 * 10000 + 初级认知载体 * 1000;
-
-    const exp1Span = document.querySelector('.stock-value[data-material="精一经验值"]');
-    const exp3Span = document.querySelector('.stock-value[data-material="精三经验值"]');
-    if (exp1Span) exp1Span.textContent = 精一经验值;
-    if (exp3Span) exp3Span.textContent = 精三经验值;
+    const 认知载体经验值 = 高级认知载体 * 10000 + 初级认知载体 * 1000;
+    const cognSpan = document.querySelector('.stock-value[data-material="认知载体经验值"]');
+    if (cognSpan) cognSpan.textContent = 认知载体经验值;
 
     // 武器经验
     const 武器检查单元 = parseFloat(document.querySelector('.stock-input[data-material="武器检查单元"]')?.value) || 0;
     const 武器检查装置 = parseFloat(document.querySelector('.stock-input[data-material="武器检查装置"]')?.value) || 0;
     const 武器检查套组 = parseFloat(document.querySelector('.stock-input[data-material="武器检查套组"]')?.value) || 0;
-
     const 武器经验值 = 武器检查套组 * 10000 + 武器检查装置 * 1000 + 武器检查单元 * 200;
-
-    const weaponExpSpan = document.querySelector('.stock-value[data-material="武器经验值"]');
-    if (weaponExpSpan) weaponExpSpan.textContent = 武器经验值;
+    const weaponSpan = document.querySelector('.stock-value[data-material="武器经验值"]');
+    if (weaponSpan) weaponSpan.textContent = 武器经验值;
 
     updateMissingRow(); // 重新计算缺少
 }

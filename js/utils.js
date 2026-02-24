@@ -25,17 +25,81 @@ function mapSkillToGeneric(干员, 项目) {
     return 项目;
 }
 
-// 计算干员等级从现等级到目标等级的总材料（跨越多个精X等级）
+// 将作战记录经验值转换为高级/中级/初级作战记录（优先最小溢出，其次最少材料）
+function convertRecordExpToMaterials(exp) {
+    const materials = { "高级作战记录": 0, "中级作战记录": 0, "初级作战记录": 0 };
+    let bestOverflow = Infinity;
+    let bestCount = Infinity;
+    let bestHigh = 0, bestMid = 0, bestLow = 0;
+    const maxHigh = Math.ceil(exp / 10000);
+    for (let h = 0; h <= maxHigh; h++) {
+        const highExp = h * 10000;
+        let remaining = exp - highExp;
+        if (remaining < 0) remaining = 0;
+        const maxMid = Math.ceil(remaining / 1000);
+        for (let m = 0; m <= maxMid; m++) {
+            const midExp = m * 1000;
+            let rem = remaining - midExp;
+            if (rem < 0) rem = 0;
+            const low = Math.ceil(rem / 200);
+            const totalExp = highExp + midExp + low * 200;
+            const overflow = totalExp - exp;
+            const totalCount = h + m + low;
+            if (overflow < bestOverflow || (overflow === bestOverflow && totalCount < bestCount)) {
+                bestOverflow = overflow;
+                bestCount = totalCount;
+                bestHigh = h;
+                bestMid = m;
+                bestLow = low;
+            }
+        }
+    }
+    materials["高级作战记录"] = bestHigh;
+    materials["中级作战记录"] = bestMid;
+    materials["初级作战记录"] = bestLow;
+    return materials;
+}
+
+// 将认知载体经验值转换为高级/初级认知载体（优先最小溢出，其次最少材料）
+function convertCognitionExpToMaterials(exp) {
+    const materials = { "高级认知载体": 0, "初级认知载体": 0 };
+    let bestOverflow = Infinity;
+    let bestCount = Infinity;
+    let bestHigh = 0, bestLow = 0;
+    const maxHigh = Math.ceil(exp / 10000);
+    for (let h = 0; h <= maxHigh; h++) {
+        const highExp = h * 10000;
+        let remaining = exp - highExp;
+        if (remaining < 0) remaining = 0;
+        const low = Math.ceil(remaining / 1000);
+        const totalExp = highExp + low * 1000;
+        const overflow = totalExp - exp;
+        const totalCount = h + low;
+        if (overflow < bestOverflow || (overflow === bestOverflow && totalCount < bestCount)) {
+            bestOverflow = overflow;
+            bestCount = totalCount;
+            bestHigh = h;
+            bestLow = low;
+        }
+    }
+    materials["高级认知载体"] = bestHigh;
+    materials["初级认知载体"] = bestLow;
+    return materials;
+}
+
+// 计算干员等级从现等级到目标等级的总材料（按阶段独立转换）
 function calculateLevelMaterials(干员, 现等级, 目标等级) {
     let total = {};
     MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
+    let totalRecordExp = 0;
+    let totalCognitionExp = 0;
 
     const levelStages = [
-        { project: "精0等级", min: 1, max: 20 },
-        { project: "精1等级", min: 20, max: 40 },
-        { project: "精2等级", min: 40, max: 60 },
-        { project: "精3等级", min: 60, max: 80 },
-        { project: "精4等级", min: 80, max: 90 }
+        { project: "精0等级", min: 1, max: 20, expType: "作战记录经验值" },
+        { project: "精1等级", min: 20, max: 40, expType: "作战记录经验值" },
+        { project: "精2等级", min: 40, max: 60, expType: "作战记录经验值" },
+        { project: "精3等级", min: 60, max: 80, expType: "认知载体经验值" },
+        { project: "精4等级", min: 80, max: 90, expType: "认知载体经验值" }
     ];
 
     for (let stage of levelStages) {
@@ -43,15 +107,46 @@ function calculateLevelMaterials(干员, 现等级, 目标等级) {
             let stageCur = Math.max(现等级, stage.min);
             let stageTar = Math.min(目标等级, stage.max);
             if (stageCur < stageTar) {
-                const stageRes = calculateMaterials(干员, stage.project, stageCur, stageTar);
-                if (stageRes) {
-                    MATERIAL_COLUMNS.forEach(mat => {
-                        total[mat] += stageRes[mat] || 0;
-                    });
+                // 从数据库中筛选当前阶段内所有符合条件的小段记录
+                const rows = DATABASE.filter(row => 
+                    (row.干员 === "" || row.干员 === "通用") &&
+                    row.升级项目 === stage.project &&
+                    row.现等级 >= stageCur &&
+                    row.目标等级 <= stageTar
+                );
+                let stageExp = 0;
+                for (let row of rows) {
+                    total["折金票"] += row["折金票"] || 0;
+                    if (stage.expType === "作战记录经验值") {
+                        stageExp += row["作战记录经验值"] || 0;
+                    } else {
+                        stageExp += row["认知载体经验值"] || 0;
+                    }
+                }
+                // 对本阶段经验值进行转换，累加材料
+                if (stageExp > 0) {
+                    if (stage.expType === "作战记录经验值") {
+                        const expMaterials = convertRecordExpToMaterials(stageExp);
+                        for (let [mat, val] of Object.entries(expMaterials)) {
+                            total[mat] += val;
+                        }
+                        totalRecordExp += stageExp; // 记录总经验供显示
+                    } else {
+                        const expMaterials = convertCognitionExpToMaterials(stageExp);
+                        for (let [mat, val] of Object.entries(expMaterials)) {
+                            total[mat] += val;
+                        }
+                        totalCognitionExp += stageExp;
+                    }
                 }
             }
         }
     }
+
+    // 记录总经验值（用于库存行显示）
+    total["作战记录经验值"] = totalRecordExp;
+    total["认知载体经验值"] = totalCognitionExp;
+
     return total;
 }
 
@@ -237,4 +332,68 @@ function calculateMaterials(干员, 项目, 现等级, 目标等级) {
 function mapAdaptLevelToColor(level) {
     const colors = ['绿装', '蓝装', '紫装', '金装'];
     return colors[level] !== undefined ? colors[level] : level; // 若超出范围则返回原数字
+}
+
+// 将作战记录经验值转换为高级/中级/初级作战记录（优先最小溢出，其次最少材料）
+function convertRecordExpToMaterials(exp) {
+    const materials = { "高级作战记录": 0, "中级作战记录": 0, "初级作战记录": 0 };
+    const values = [10000, 1000, 200];
+    const keys = ["高级作战记录", "中级作战记录", "初级作战记录"];
+    let remaining = exp;
+    // 贪心从大到小，但后续枚举调整
+    let best = { total: Infinity, overflow: Infinity, counts: [0,0,0] };
+    // 枚举高级的数量（允许超额）
+    const maxHigh = Math.ceil(remaining / 10000);
+    for (let h = 0; h <= maxHigh; h++) {
+        const highExp = h * 10000;
+        let rem1 = remaining - highExp;
+        if (rem1 < 0) rem1 = 0; // 超额
+        // 枚举中级的数量
+        const maxMid = Math.ceil(rem1 / 1000);
+        for (let m = 0; m <= maxMid; m++) {
+            const midExp = m * 1000;
+            let rem2 = rem1 - midExp;
+            if (rem2 < 0) rem2 = 0;
+            const low = Math.ceil(rem2 / 200);
+            const totalExp = highExp + midExp + low * 200;
+            const overflow = totalExp - exp;
+            const totalCount = h + m + low;
+            if (overflow < best.overflow || (overflow === best.overflow && totalCount < best.total)) {
+                best.overflow = overflow;
+                best.total = totalCount;
+                best.counts = [h, m, low];
+            }
+        }
+    }
+    materials["高级作战记录"] = best.counts[0];
+    materials["中级作战记录"] = best.counts[1];
+    materials["初级作战记录"] = best.counts[2];
+    return materials;
+}
+
+// 将认知载体经验值转换为高级/初级认知载体（优先最小溢出，其次最少材料）
+function convertCognitionExpToMaterials(exp) {
+    const materials = { "高级认知载体": 0, "初级认知载体": 0 };
+    const values = [10000, 1000];
+    const keys = ["高级认知载体", "初级认知载体"];
+    let remaining = exp;
+    let best = { total: Infinity, overflow: Infinity, counts: [0,0] };
+    const maxHigh = Math.ceil(remaining / 10000);
+    for (let h = 0; h <= maxHigh; h++) {
+        const highExp = h * 10000;
+        let rem1 = remaining - highExp;
+        if (rem1 < 0) rem1 = 0;
+        const low = Math.ceil(rem1 / 1000);
+        const totalExp = highExp + low * 1000;
+        const overflow = totalExp - exp;
+        const totalCount = h + low;
+        if (overflow < best.overflow || (overflow === best.overflow && totalCount < best.total)) {
+            best.overflow = overflow;
+            best.total = totalCount;
+            best.counts = [h, low];
+        }
+    }
+    materials["高级认知载体"] = best.counts[0];
+    materials["初级认知载体"] = best.counts[1];
+    return materials;
 }

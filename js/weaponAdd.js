@@ -412,8 +412,7 @@ function convertExpToMaterials(exp) {
         }
         const unitExp = u * 200;
         const totalExp = deviceExp + unitExp;
-        const overflow = totalExp - remaining; // 可能为负？但 needExp>0 时 unitExp 已确保 >= needExp，所以 totalExp >= remaining
-        // 如果 needExp <=0，则 u=0，totalExp = deviceExp，可能大于 remaining，也计算溢出
+        const overflow = totalExp - remaining;
 
         if (overflow < minOverflow) {
             minOverflow = overflow;

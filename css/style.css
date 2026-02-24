@@ -573,3 +573,59 @@ body.night-mode .panel {
 .night-mode #weaponDemandMaterials th {
     background-color: #3a3a3a !important;
 }
+
+/* 库存页面表格 */
+.stock-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 12px;
+    max-width: 1000px;
+    margin: 0 auto 20px;
+}
+
+/* 卡片样式 */
+.stock-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 12px;
+    transition: box-shadow 0.2s;
+}
+.stock-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 经验值只读文本 */
+.stock-card .exp-text {
+    display: block;
+    text-align: right;
+    padding: 8px 0;
+    font-size: 14px;
+    color: inherit;
+    background: none;
+    border: none;
+}
+.night-mode .stock-card .exp-text {
+    color: #e0e0e0;
+}
+
+/* 库存卡片内所有数值左对齐 */
+.stock-card input[type=number],
+.stock-card .exp-text {
+    text-align: left;
+}
+
+/* 夜间模式 */
+.night-mode .stock-card {
+    background: #2d2d2d;
+    border-color: #444;
+}
+.night-mode .stock-card input[type=number],
+.night-mode .stock-card .exp-display {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+.night-mode .stock-card:hover {
+    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+}

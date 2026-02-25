@@ -20,8 +20,7 @@
         <a href="#weapon" class="nav-link" data-page="weapon">🗡️ 武器添加</a>
         <a href="#plan" class="nav-link" data-page="plan">📊 规划</a>
         <a href="#stock" class="nav-link" data-page="stock">📦 库存</a>
-        <!-- 暂时隐藏 -->
-        <!-- <a href="#settings" class="nav-link" data-page="settings">⚙️ 设置</a> -->
+        <a href="#settings" class="nav-link" data-page="settings">⚙️ 设置</a>
     </div>
 
     <!-- 首页页面 -->
@@ -38,7 +37,7 @@
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-19</strong>：新增干员添加页面、支持一键拉满同个干员进行计算。修复bug:表格自动填写最小值导致无法自己输入对应现有等级</li>
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-21</strong>：适配手机端界面，新增夜间模式，支持培养表一键清除所有计划。</li>
                 <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-24</strong>：在一键计算时新增一行总和确认该计算需求。添加武器养成界面，支持武器素材计算。</li>  
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-25</strong>：修改角色升级计算逻辑</li>               
+                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-25</strong>：修改角色升级计算逻辑。新增库存界面用于输入目前仓库内素材库存。新增设置界面可导出导入备份计划。新增规划界面算出需要多长时间把角色计划练好。</li>               
             </ul>
         </div>
     </div>
@@ -242,8 +241,7 @@
     <!-- 规划页面 -->
     <div id="page-plan" class="page">
         <div class="panel">
-            <h2>规划 - 体力计算</h2>
-            <p style="color: #6c757d; padding: 20px; text-align: center;">功能开发中，敬请期待...</p>
+            <!-- 内容由 JS 动态生成 -->
         </div>
     </div>
 
@@ -263,13 +261,29 @@
     <div id="page-settings" class="page">
         <div class="panel">
             <h2>数据备份</h2>
-            <p>复制下方数据或粘贴已保存的数据以恢复计划。</p>
-            <button id="copyPlanData">📋 复制计划数据</button>
-            <button id="pastePlanData">📥 粘贴恢复计划</button>
+
+            <!-- 探索等级选择 -->
+            <div class="form-row" style="margin-bottom: 20px;">
+                <label for="exploreLevelSelect">玩家探索等级：</label>
+                <select id="exploreLevelSelect">
+                    <option value="1">1级</option>
+                    <option value="2">2级</option>
+                    <option value="3">3级</option>
+                    <option value="4">4级</option>
+                    <option value="5">5级</option>
+                    <option value="6">6级</option>
+                    <option value="7">7级</option>
+                </select>
+            </div>
+
             <hr>
-            <p>危险操作：</p>
-            <button id="clearAllData" style="background:#dc3545;">⚠️ 清除所有数据</button>
-            <button id="resetStockData" style="background:#ffc107;">🔄 重置库存数据</button>
+            <p>导出全部数据（计划+库存）或从备份恢复。</p>
+            <button id="generateBackup">📄 生成备份</button>
+            <button id="applyBackup">🔄 应用备份</button>
+            <br><br>
+            <textarea id="backupText" rows="8" style="width:100%; font-family: monospace; padding:8px; box-sizing:border-box;" placeholder="备份数据将显示在这里..."></textarea>
+            <br><br>
+            <p style="color: #6c757d;">提示：可以手动复制上方文本保存，或将保存的文本粘贴后点击“应用备份”。</p>
         </div>
     </div>
 
@@ -286,6 +300,7 @@
     <script src="js/planner.js"></script>       <!-- 依赖 data.js, utils.js, router.js 中的函数 -->
     <script src="js/operatorAdd.js"></script>   <!-- 依赖 data.js, utils.js, planner.js 中的 addPlanRow 等 -->
     <script src="js/weaponAdd.js"></script>     <!-- 依赖 data.js, planner.js 中的函数 -->
+    <script src="js/plan.js"></script>          <!-- 依赖 data.js, plan.js 中的函数 -->
     <script src="js/stock.js"></script>         <!-- 依赖 planner.js 中的 updateExpValues 等 -->
     <script src="js/settings.js"></script>      <!-- 依赖 planner.js 中的 addPlanRow 等 -->
     <script src="js/main.js"></script>          <!-- 最后执行，调用各 init 函数 -->

@@ -629,3 +629,47 @@ body.night-mode .panel {
 .night-mode .stock-card:hover {
     box-shadow: 0 2px 8px rgba(255,255,255,0.1);
 }
+
+/* 规划页面表格 */
+.plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+}
+.plan-table th,
+.plan-table td {
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+.plan-table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+.plan-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+.plan-summary {
+    font-size: 16px;
+    padding: 10px;
+    background-color: #e2f0d9;
+    border-radius: 4px;
+}
+.night-mode .plan-table th {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #444;
+}
+.night-mode .plan-table td {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #444;
+}
+.night-mode .plan-table tbody tr:nth-child(even) td {
+    background-color: #333;
+}
+.night-mode .plan-summary {
+    background-color: #2a5a2a;
+    color: #e0e0e0;
+}

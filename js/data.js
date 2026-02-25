@@ -902,3 +902,22 @@ const DEFAULT_ICON = "images/icons/default.png";
 
 // 材料列列表
 const MATERIAL_COLUMNS = Object.keys(MATERIAL_ICONS);
+
+// 刷取项（80体力）
+const FARM_ITEMS = [
+    { name: "协议空间·干员经验（1~60级经验卡）", output: { "高级作战记录": 17 } },
+    { name: "协议空间·干员经验（61~90级经验卡）", output: { "高级认知载体": 6, "初级认知载体": 8 } },
+    { name: "协议空间·干员进阶（低阶精英化）", output: { "协议圆盘": 34 } },
+    { name: "协议空间·干员进阶（高阶精英化）", output: { "协议圆盘组": 14 } },
+    { name: "协议空间·钱币收集", output: { "折金票": 34000 } },
+    { name: "协议空间·技能提升（低阶技能）", output: { "协议棱柱": 85 } },
+    { name: "协议空间·技能提升（高阶技能）", output: { "协议棱柱组": 17 } },
+    { name: "协议空间·武器经验", output: { "武器检查套组": 16, "武器检查装置": 10 } },
+    { name: "协议空间·武器进阶（低阶突破）", output: { "强固模具": 34 } },
+    { name: "协议空间·武器进阶（高阶突破）", output: { "重型强固模具": 14 } },
+    { name: "协议空间·高阶培养I", output: { "D96钢样品四": 6 } },
+    { name: "协议空间·高阶培养II", output: { "超距辉映管": 6 } },
+    { name: "协议空间·高阶培养III", output: { "快子遴捡晶格": 6 } },
+    { name: "协议空间·高阶培养IV", output: { "象限拟合液": 6 } },
+    { name: "协议空间·高阶培养V", output: { "三相纳米片": 6 } }
+];

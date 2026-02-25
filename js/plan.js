@@ -80,8 +80,10 @@ function displayPlanResults(farmItems, needs) {
             `;
         });
         html += `</tbody></table>`;
-        const days = Math.ceil(totalStamina / 200);
-        html += `<p class="plan-summary">总体力需求：<strong>${totalStamina}</strong>，约需 <strong>${days}</strong> 天（每天200体力）。</p>`;
+        // 读取每日体力上限
+        const dailyStamina = parseInt(localStorage.getItem('zmdgraph_daily_stamina') || '200', 10);
+        const days = Math.ceil(totalStamina / dailyStamina);
+        html += `<p class="plan-summary">总体力需求：<strong>${totalStamina}</strong>，约需 <strong>${days}</strong> 天（每日 ${dailyStamina} 体力）。</p>`
     }
     panel.innerHTML = html;
 }

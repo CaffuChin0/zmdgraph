@@ -10,6 +10,19 @@ function initSettings() {
         });
     }
 
+    // 每日体力上限初始化
+    const dailyStaminaInput = document.getElementById('dailyStaminaInput');
+    if (dailyStaminaInput) {
+        const savedStamina = localStorage.getItem('zmdgraph_daily_stamina') || '200';
+        dailyStaminaInput.value = savedStamina;
+        dailyStaminaInput.addEventListener('change', function() {
+            let val = parseInt(this.value, 10);
+            if (isNaN(val) || val < 200) val = 200;
+            this.value = val;
+            localStorage.setItem('zmdgraph_daily_stamina', val);
+        });
+    }
+
     // 生成备份（写入文本框）
     document.getElementById('generateBackup')?.addEventListener('click', function() {
         const stockData = {};

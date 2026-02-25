@@ -277,6 +277,13 @@
                 </select>
             </div>
 
+            <!-- 每日体力上限 -->
+            <div class="form-row" style="margin-bottom: 20px;">
+                <label for="dailyStaminaInput">每日体力上限：</label>
+                <input type="number" id="dailyStaminaInput" min="200" max="1000" value="200" style="width: 80px;">
+                <span style="margin-left: 10px; color: #6c757d;">（规划中用于计算天数）</span>
+            </div>
+
             <hr>
             <p>导出全部数据（计划+库存）或从备份恢复。</p>
             <button id="generateBackup">📄 生成备份</button>

@@ -15,11 +15,13 @@ window.onload = function() {
     initWeaponAdd(); // 在 weaponAdd.js 中定义
     initStock(); // 在 stock.js 中定义
     initSettings(); // 在 settings.js 中定义
-    initPlan(); // 在 plan.js 中定义
 
     // 加载存储数据
     loadPlansFromStorage(); // 在 planner.js 中定义
     loadStockFromStorage(); // 在 stock.js 中定义
+
+    // 初始化规划页面（基于已加载的数据）
+    initPlan(); // 在 plan.js 中定义
 
     // 夜间模式
     initNightMode();

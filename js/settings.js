@@ -60,6 +60,10 @@ function initSettings() {
             updateMissingRow();
             savePlansToStorage();
             saveStockToStorage();
+            refreshStockPage();
+            if (typeof refreshPlan === 'function') {
+                refreshPlan();
+            }
             alert('备份恢复成功');
         } catch (e) {
             alert('无效的备份数据格式：' + e.message);

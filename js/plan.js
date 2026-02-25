@@ -1,33 +1,37 @@
 // 规划页面逻辑
 function initPlan() {
+    // 确保缺少行数据最新
+    if (typeof updateMissingRow === 'function') {
+        updateMissingRow();
+    }
     renderPlanPage();
 }
 
 function renderPlanPage() {
     const panel = document.querySelector('#page-plan .panel');
     if (!panel) return;
-    // 计算总材料需求
-    const totals = calculateTotalMaterials();
+    // 从缺少行获取缺少的材料数量
+    const missing = getMissingMaterials();
     // 计算刷取次数
-    const farmResults = calculateFarmTimes(totals);
+    const farmResults = calculateFarmTimes(missing);
     // 渲染结果
-    displayPlanResults(farmResults, totals);
+    displayPlanResults(farmResults, missing);
 }
 
-// 从 planRows 计算所有材料总和
-function calculateTotalMaterials() {
-    const totals = {};
-    MATERIAL_COLUMNS.forEach(mat => totals[mat] = 0);
-    planRows.forEach(row => {
-        const mats = row.materials;
-        MATERIAL_COLUMNS.forEach(mat => {
-            totals[mat] += mats[mat] || 0;
-        });
+// 从缺少行单元格获取缺少的材料数量
+function getMissingMaterials() {
+    const missing = {};
+    MATERIAL_COLUMNS.forEach(mat => missing[mat] = 0);
+    document.querySelectorAll('#summaryRows .missing-value').forEach(td => {
+        const mat = td.dataset.material;
+        if (mat) {
+            missing[mat] = parseFloat(td.textContent) || 0;
+        }
     });
-    return totals;
+    return missing;
 }
 
-// 根据需求计算各刷取项的次数
+// 根据缺少数量计算各刷取项的次数
 function calculateFarmTimes(needs) {
     return FARM_ITEMS.map(item => {
         let maxCount = 0;
@@ -39,23 +43,23 @@ function calculateFarmTimes(needs) {
             }
         }
         return { ...item, count: maxCount };
-    }).filter(item => item.count > 0); // 只保留有需求的项
+    }).filter(item => item.count > 0);
 }
 
-function displayPlanResults(farmItems, totals) {
+function displayPlanResults(farmItems, needs) {
     const panel = document.querySelector('#page-plan .panel');
     let html = `
         <h2>规划 - 体力计算</h2>
     `;
     if (farmItems.length === 0) {
-        html += '<p>培养表暂无计划，请先添加计划行。</p>';
+        html += '<p>缺少材料为0，无需刷取。</p>';
     } else {
         let totalStamina = 0;
         html += `
             <table class="plan-table">
                 <thead>
                     <tr>
-                        <th>刷取关卡</th>
+                        <th>刷取项</th>
                         <th>每次产出</th>
                         <th>所需次数</th>
                         <th>消耗体力</th>
@@ -81,3 +85,15 @@ function displayPlanResults(farmItems, totals) {
     }
     panel.innerHTML = html;
 }
+
+// 刷新规划页面（直接重新渲染，不考虑页面是否激活）
+function refreshPlan() {
+    renderPlanPage();
+}
+
+// 监听页面切换，当规划页面激活时重新渲染
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#plan' || window.location.hash === '#plan/') {
+        renderPlanPage();
+    }
+});

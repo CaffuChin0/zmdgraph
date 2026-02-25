@@ -75,6 +75,15 @@ function createSummaryRows() {
                     updateMissingRow();
                 }
                 saveStockToStorage();
+                // 同步库存页面的对应输入框
+                const stockInput = document.querySelector(`#page-stock .stock-input[data-material="${mat}"]`);
+                if (stockInput) {
+                    stockInput.value = this.value;
+                }
+                // 刷新规划页面
+                if (typeof refreshPlan === 'function') {
+                    refreshPlan();
+                }
             });
             td.appendChild(input);
         }
@@ -242,6 +251,7 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
             tbody.removeChild(row);
             updateSummaryRows();
             savePlansToStorage();
+            if (typeof refreshPlan === 'function') refreshPlan();
         }
     };
     tdRemove.appendChild(removeBtn);
@@ -326,6 +336,7 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
 
     updateSummaryRows();
     if (!skipSave) savePlansToStorage();
+    if (typeof refreshPlan === 'function') refreshPlan(); 
 }
 
 // 隐藏零材料列
@@ -803,6 +814,7 @@ function initPlanner() {
             document.getElementById('planBody').innerHTML = '';
             updateSummaryRows();
             savePlansToStorage();
+            if (typeof refreshPlan === 'function') refreshPlan();
         }
     });
 

@@ -1,16 +1,18 @@
 // 库存页面数据
 function renderStockPage() {
-    const stockPanel = document.querySelector('#page-stock .panel');
+    const panel = document.querySelector('#page-stock .panel');
+    if (!panel) return;
     // 清除原有表格和旧网格
-    const oldTable = document.getElementById('stockTable');
-    if (oldTable) oldTable.remove();
     const oldGrid = document.getElementById('stockGrid');
     if (oldGrid) oldGrid.remove();
-
+   
     // 创建网格容器
     const gridContainer = document.createElement('div');
     gridContainer.id = 'stockGrid';
-    gridContainer.className = 'stock-grid'; // 使用CSS类控制布局
+    gridContainer.className = 'stock-grid';// 使用CSS类控制布局
+    
+    // 从 localStorage 加载库存数据
+    const stockData = JSON.parse(localStorage.getItem('zmdgraph_stock') || '{}');
 
     MATERIAL_COLUMNS.forEach(mat => {
         const card = document.createElement('div');
@@ -42,13 +44,12 @@ function renderStockPage() {
             const span = document.createElement('span');
             span.className = 'stock-value exp-text';
             span.dataset.material = mat;
-            span.textContent = '0';
-            // 样式由CSS控制
+            span.textContent = stockData[mat] || '0';
             card.appendChild(span);
         } else {
             const input = document.createElement('input');
             input.type = 'number';
-            input.value = '0';
+            input.value = stockData[mat] || '0';
             input.min = '0';
             input.className = 'stock-input stock-value';
             input.dataset.material = mat;
@@ -74,6 +75,9 @@ function renderStockPage() {
                     updateMissingRow();
                 }
                 saveStockToStorage();
+                if (typeof refreshPlan === 'function') {
+                    refreshPlan();
+                }
             });
             card.appendChild(input);
         }
@@ -82,7 +86,6 @@ function renderStockPage() {
     });
 
     // 将网格容器插入面板（在保存按钮之前）
-    const panel = document.querySelector('#page-stock .panel');
     const saveBtn = document.getElementById('saveStockBtn');
     panel.insertBefore(gridContainer, saveBtn);
 }
@@ -113,6 +116,14 @@ function loadStockFromStorage() {
     updateExpValues();
     updateMissingRow();
     _loading = false;
+    refreshStockPage();
+}
+
+function refreshStockPage() {
+    const stockPage = document.getElementById('page-stock');
+    if (stockPage && stockPage.classList.contains('active')) {
+        renderStockPage();
+    }
 }
 
 function initStock() {

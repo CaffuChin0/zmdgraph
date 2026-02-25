@@ -673,3 +673,28 @@ body.night-mode .panel {
     background-color: #2a5a2a;
     color: #e0e0e0;
 }
+
+/* 库存手机端适配 */
+@media screen and (max-width: 600px) {
+    .stock-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* 小屏幕下改为2列 */
+        gap: 8px; /* 适当缩小间距 */
+    }
+    .stock-card {
+        padding: 8px; /* 缩小内边距 */
+    }
+    .stock-card input[type=number] {
+        width: 100%; /* 输入框宽度占满卡片 */
+        box-sizing: border-box;
+    }
+    .stock-card .exp-text {
+        text-align: left;
+        font-size: 13px; /* 略缩小字体 */
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .stock-grid {
+        grid-template-columns: repeat(1, 1fr) !important; /* 更窄屏幕下改为1列 */
+    }
+}

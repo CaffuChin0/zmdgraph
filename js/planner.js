@@ -429,6 +429,106 @@ function savePlansToStorage() {
     }
 }
 
+// 刷新所有计划行的材料数据
+function refreshAllPlans() {
+    const tbody = document.getElementById('planBody');
+    const rows = tbody.children;
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const operator = row.cells[4].textContent; // 干员列
+        const project = row.cells[5].textContent;  // 升级项目列
+        const curLvText = row.cells[6].textContent;
+        const tarLvText = row.cells[7].textContent;
+
+        // 解析等级（可能是数字或颜色文字）
+        let curLv, tarLv;
+        if (project.includes('装备适配')) {
+            // 颜色文字映射回数字
+            const colorMap = { '绿装': 0, '蓝装': 1, '紫装': 2, '金装': 3 };
+            curLv = colorMap[curLvText] !== undefined ? colorMap[curLvText] : parseInt(curLvText, 10);
+            tarLv = colorMap[tarLvText] !== undefined ? colorMap[tarLvText] : parseInt(tarLvText, 10);
+        } else {
+            curLv = parseInt(curLvText, 10);
+            tarLv = parseInt(tarLvText, 10);
+        }
+
+        if (isNaN(curLv) || isNaN(tarLv)) continue;
+
+        // 根据项目类型重新计算材料
+        let newMaterials;
+        if (project.includes('角色等级-升级')) {
+            newMaterials = calculateLevelMaterials(operator, curLv, tarLv);
+        } else if (project.includes('角色等级-精英阶段')) {
+            // 从项目名中提取精英阶段起止
+            const match = project.match(/\((\d+)→(\d+)\)/);
+            if (match) {
+                const from = parseInt(match[1], 10);
+                const to = parseInt(match[2], 10);
+                // 需要逐级累加
+                let total = {};
+                MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
+                for (let e = from; e < to; e++) {
+                    const res = calculateMaterials(operator, '精英阶段', e, e+1);
+                    if (res) {
+                        MATERIAL_COLUMNS.forEach(mat => total[mat] += res[mat] || 0);
+                    }
+                }
+                newMaterials = total;
+            } else {
+                continue;
+            }
+        } else if (project.includes('角色等级-装备适配')) {
+            // 从项目名中提取颜色起止
+            const colorMap = { '绿装':0, '蓝装':1, '紫装':2, '金装':3 };
+            const match = project.match(/\((\D+)→(\D+)\)/);
+            if (match) {
+                const fromColor = match[1];
+                const toColor = match[2];
+                const from = colorMap[fromColor];
+                const to = colorMap[toColor];
+                let total = {};
+                MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
+                for (let a = from; a < to; a++) {
+                    const res = calculateMaterials(operator, '装备适配', a, a+1);
+                    if (res) {
+                        MATERIAL_COLUMNS.forEach(mat => total[mat] += res[mat] || 0);
+                    }
+                }
+                newMaterials = total;
+            } else {
+                continue;
+            }
+        } else {
+            // 其他项目（技能、天赋、基建等）
+            newMaterials = calculateMaterials(operator, project, curLv, tarLv);
+        }
+
+        if (!newMaterials) {
+            console.warn(`刷新失败：无法计算 ${operator} ${project} ${curLv}→${tarLv}`);
+            continue;
+        }
+
+        // 更新行内的材料单元格
+        MATERIAL_COLUMNS.forEach((mat, idx) => {
+            const cell = row.cells[8 + idx];
+            if (cell) {
+                cell.textContent = newMaterials[mat] || 0;
+            }
+        });
+
+        // 更新 planRows 中的数据
+        if (planRows[i]) {
+            planRows[i].materials = newMaterials;
+        }
+    }
+
+    // 更新合计行和缺少行
+    updateSummaryRows();
+    savePlansToStorage();
+    if (typeof refreshPlan === 'function') refreshPlan();
+    alert('计划刷新完成');
+}
+
 // 初始化培养表页面
 function initPlanner() {
 
@@ -815,6 +915,17 @@ function initPlanner() {
             updateSummaryRows();
             savePlansToStorage();
             if (typeof refreshPlan === 'function') refreshPlan();
+        }
+    });
+
+    // 刷新计划按钮
+    document.getElementById('refreshPlansBtn')?.addEventListener('click', function() {
+        if (planRows.length === 0) {
+            alert('没有计划可刷新');
+            return;
+        }
+        if (confirm('确定要刷新所有计划材料吗？将根据最新数据重新计算。')) {
+            refreshAllPlans();
         }
     });
 

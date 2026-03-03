@@ -1,12 +1,11 @@
 // 培养表页面数据
-// 培养表的所有操作，包括表头渲染、汇总行、计划行添加、更新合计、隐藏列等，以及培养表特有的事件绑定（干员选择、计算按钮等）。
 
 // 动态生成表头（包含图标）
 function renderTableHeader() {
     const theadRow = document.querySelector('#planTable thead tr');
     MATERIAL_COLUMNS.forEach(mat => {
         const th = document.createElement('th');
-        th.setAttribute('data-material', mat); // 新增
+        th.setAttribute('data-material', mat);
         const icon = document.createElement('img');
         icon.src = MATERIAL_ICONS[mat] || DEFAULT_ICON;
         icon.style.width = '20px';
@@ -19,7 +18,7 @@ function renderTableHeader() {
     });
 }
 
-// 创建底部汇总行
+// 创建汇总行（插入到 thead 中）
 function createSummaryRows() {
     const planTable = document.getElementById('planTable');
     const oldSummary = document.getElementById('summaryRows');
@@ -27,17 +26,14 @@ function createSummaryRows() {
 
     const thead = planTable.querySelector('thead');
 
- 
     // 库存行
     const stockRow = document.createElement('tr');
     stockRow.className = 'inventory-row summary-row';
-    // 前4个单元格用于“库存”标签及占位
     for (let i = 0; i < 4; i++) {
         const td = document.createElement('td');
         if (i === 0) td.textContent = '库存';
         stockRow.appendChild(td);
     }
-    // 再补4个空单元格（对应移除、完成、隐藏、干员等，但已在表头占用，这里只是占位）
     for (let i = 0; i < 4; i++) stockRow.appendChild(document.createElement('td'));
 
     MATERIAL_COLUMNS.forEach(mat => {
@@ -56,7 +52,6 @@ function createSummaryRows() {
             input.min = '0';
             input.className = 'stock-input stock-value';
             input.dataset.material = mat;
-            // 保留原有的 input 事件逻辑（请从原函数中复制完整代码）
             input.addEventListener('input', function() {
                 let val = parseInt(this.value, 10);
                 if (isNaN(val)) {
@@ -143,7 +138,6 @@ function updateSummaryRows() {
         });
     });
 
-    // 更新合计行
     MATERIAL_COLUMNS.forEach(mat => {
         const cell = document.querySelector(`.total-value[data-material="${mat}"]`);
         if (cell) cell.textContent = totals[mat];
@@ -155,7 +149,6 @@ function updateSummaryRows() {
 
 // 根据经验卡库存更新经验值显示
 function updateExpValues() {
-    // 干员经验（作战记录）
     const 高级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="高级作战记录"]')?.value) || 0;
     const 中级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="中级作战记录"]')?.value) || 0;
     const 初级作战记录 = parseFloat(document.querySelector('.stock-input[data-material="初级作战记录"]')?.value) || 0;
@@ -164,7 +157,6 @@ function updateExpValues() {
         span.textContent = 作战记录经验值;
     });
 
-    // 干员经验（认知载体）
     const 高级认知载体 = parseFloat(document.querySelector('.stock-input[data-material="高级认知载体"]')?.value) || 0;
     const 初级认知载体 = parseFloat(document.querySelector('.stock-input[data-material="初级认知载体"]')?.value) || 0;
     const 认知载体经验值 = 高级认知载体 * 10000 + 初级认知载体 * 1000;
@@ -172,7 +164,6 @@ function updateExpValues() {
         span.textContent = 认知载体经验值;
     });
 
-    // 武器经验
     const 武器检查单元 = parseFloat(document.querySelector('.stock-input[data-material="武器检查单元"]')?.value) || 0;
     const 武器检查装置 = parseFloat(document.querySelector('.stock-input[data-material="武器检查装置"]')?.value) || 0;
     const 武器检查套组 = parseFloat(document.querySelector('.stock-input[data-material="武器检查套组"]')?.value) || 0;
@@ -209,7 +200,7 @@ function updateMissingRow() {
 }
 
 // 添加计划行
-function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = false) {
+function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = false) {
     const tbody = document.getElementById('planBody');
     const row = document.createElement('tr');
 
@@ -218,7 +209,6 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
     const avatarImg = document.createElement('img');
     avatarImg.style.maxWidth = '50px';
     avatarImg.style.maxHeight = '50px';
-    // 优先使用武器头像，否则使用干员头像，最后默认头像
     avatarImg.src = WEAPON_AVATARS[operator] || OPERATOR_AVATARS[operator] || DEFAULT_AVATAR;
     tdAvatar.appendChild(avatarImg);
     row.appendChild(tdAvatar);
@@ -325,51 +315,45 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
 
     updateSummaryRows();
     if (!skipSave) savePlansToStorage();
-    if (typeof refreshPlan === 'function') refreshPlan(); 
+    if (typeof refreshPlan === 'function') refreshPlan();
 }
 
 // 隐藏零材料列
 function hideZeroColumns() {
     const hasPlans = planRows.length > 0;
 
-    // 如果没有计划，则显示所有列（不隐藏任何列）
     if (!hasPlans) {
         MATERIAL_COLUMNS.forEach(mat => {
             document.querySelector(`#planTable thead th[data-material="${mat}"]`)?.style.setProperty('display', '', 'important');
             document.querySelectorAll(`#planBody td[data-material="${mat}"]`).forEach(td => td.style.display = '');
-            document.querySelectorAll(`#summaryRows td[data-material="${mat}"]`).forEach(td => td.style.display = '');
+            document.querySelectorAll(`#planTable .summary-row td[data-material="${mat}"]`).forEach(td => td.style.display = '');
         });
         return;
     }
 
-    // 获取各种经验值的合计（用于判断是否需要显示对应组）
     const getTotal = (mat) => parseFloat(document.querySelector(`.total-value[data-material="${mat}"]`)?.textContent) || 0;
     const recordExpTotal = getTotal("作战记录经验值");
     const cognitionExpTotal = getTotal("认知载体经验值");
     const weaponExpTotal = getTotal("武器经验值");
 
-    // 定义各组经验材料
     const recordExpGroup = ["作战记录经验值", "高级作战记录", "中级作战记录", "初级作战记录"];
     const cognitionExpGroup = ["认知载体经验值", "高级认知载体", "初级认知载体"];
     const weaponExpGroup = ["武器经验值", "武器检查单元", "武器检查装置", "武器检查套组"];
 
     MATERIAL_COLUMNS.forEach(mat => {
-        let shouldHide = true; // 默认隐藏
+        let shouldHide = true;
 
-        // 根据材料所属组别决定是否隐藏
         if (recordExpGroup.includes(mat)) {
-            shouldHide = recordExpTotal === 0; // 作战记录经验值为0则隐藏该组
+            shouldHide = recordExpTotal === 0;
         } else if (cognitionExpGroup.includes(mat)) {
-            shouldHide = cognitionExpTotal === 0; // 认知载体经验值为0则隐藏该组
+            shouldHide = cognitionExpTotal === 0;
         } else if (weaponExpGroup.includes(mat)) {
-            shouldHide = weaponExpTotal === 0; // 武器经验值为0则隐藏该组
+            shouldHide = weaponExpTotal === 0;
         } else {
-            // 其他材料：根据自身合计是否为0决定是否隐藏
             const total = getTotal(mat);
             shouldHide = total === 0;
         }
 
-        // 应用隐藏/显示
         const display = shouldHide ? 'none' : '';
 
         // 隐藏主表格表头
@@ -378,9 +362,9 @@ function hideZeroColumns() {
 
         // 隐藏计划行中的对应列
         document.querySelectorAll(`#planBody td[data-material="${mat}"]`).forEach(td => td.style.display = display);
-        
+
         // 隐藏汇总行中的对应列（库存、缺少、合计）
-        document.querySelectorAll(`#planTable .summary-row td[data-material="${mat}"]`).forEach(td => td.style.display = shouldHide ? 'none' : '');
+        document.querySelectorAll(`#planTable .summary-row td[data-material="${mat}"]`).forEach(td => td.style.display = display);
     });
 }
 
@@ -391,7 +375,6 @@ function setupLevelInputClamp(input) {
         const min = parseInt(this.min, 10);
         const max = parseInt(this.max, 10);
         if (isNaN(val)) {
-            // 如果为空，尝试恢复上次有效值
             const lastVal = this.getAttribute('data-last-value');
             if (lastVal !== null && !isNaN(parseInt(lastVal, 10))) {
                 this.value = lastVal;
@@ -400,11 +383,9 @@ function setupLevelInputClamp(input) {
             }
             return;
         }
-        // 保存当前有效值
         this.setAttribute('data-last-value', this.value);
         if (val < min) this.value = min;
         else if (val > max) this.value = max;
-        // 值可能被修正，更新复选框状态
         if (typeof updateCheckboxVisibility === 'function') {
             updateCheckboxVisibility();
         }
@@ -433,7 +414,7 @@ function loadPlansFromStorage() {
         });
         _loading = false;
         updateSummaryRows();
-        savePlansToStorage(); // 确保存储与 planRows 同步
+        savePlansToStorage();
     } catch (e) {
         console.error('加载失败', e);
         _loading = false;
@@ -459,15 +440,13 @@ function refreshAllPlans() {
     const rows = tbody.children;
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const operator = row.cells[4].textContent; // 干员列
-        const project = row.cells[5].textContent;  // 升级项目列
+        const operator = row.cells[4].textContent;
+        const project = row.cells[5].textContent;
         const curLvText = row.cells[6].textContent;
         const tarLvText = row.cells[7].textContent;
 
-        // 解析等级（可能是数字或颜色文字）
         let curLv, tarLv;
         if (project.includes('装备适配')) {
-            // 颜色文字映射回数字
             const colorMap = { '绿装': 0, '蓝装': 1, '紫装': 2, '金装': 3 };
             curLv = colorMap[curLvText] !== undefined ? colorMap[curLvText] : parseInt(curLvText, 10);
             tarLv = colorMap[tarLvText] !== undefined ? colorMap[tarLvText] : parseInt(tarLvText, 10);
@@ -478,17 +457,14 @@ function refreshAllPlans() {
 
         if (isNaN(curLv) || isNaN(tarLv)) continue;
 
-        // 根据项目类型重新计算材料
         let newMaterials;
         if (project.includes('角色等级-升级')) {
             newMaterials = calculateLevelMaterials(operator, curLv, tarLv);
         } else if (project.includes('角色等级-精英阶段')) {
-            // 从项目名中提取精英阶段起止
             const match = project.match(/\((\d+)→(\d+)\)/);
             if (match) {
                 const from = parseInt(match[1], 10);
                 const to = parseInt(match[2], 10);
-                // 需要逐级累加
                 let total = {};
                 MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
                 for (let e = from; e < to; e++) {
@@ -502,7 +478,6 @@ function refreshAllPlans() {
                 continue;
             }
         } else if (project.includes('角色等级-装备适配')) {
-            // 从项目名中提取颜色起止
             const colorMap = { '绿装':0, '蓝装':1, '紫装':2, '金装':3 };
             const match = project.match(/\((\D+)→(\D+)\)/);
             if (match) {
@@ -523,7 +498,6 @@ function refreshAllPlans() {
                 continue;
             }
         } else {
-            // 其他项目（技能、天赋、基建等）
             newMaterials = calculateMaterials(operator, project, curLv, tarLv);
         }
 
@@ -532,7 +506,6 @@ function refreshAllPlans() {
             continue;
         }
 
-        // 更新行内的材料单元格
         MATERIAL_COLUMNS.forEach((mat, idx) => {
             const cell = row.cells[8 + idx];
             if (cell) {
@@ -540,13 +513,11 @@ function refreshAllPlans() {
             }
         });
 
-        // 更新 planRows 中的数据
         if (planRows[i]) {
             planRows[i].materials = newMaterials;
         }
     }
 
-    // 更新合计行和缺少行
     updateSummaryRows();
     savePlansToStorage();
     if (typeof refreshPlan === 'function') refreshPlan();
@@ -556,7 +527,6 @@ function refreshAllPlans() {
 // 初始化培养表页面
 function initPlanner() {
 
-    // 填充干员下拉
     const operatorSelect = document.getElementById('operatorSelect');
     CHARACTER_LIST.forEach(op => {
         const opt = document.createElement('option');
@@ -565,22 +535,17 @@ function initPlanner() {
         operatorSelect.appendChild(opt);
     });
 
-    // 获取复选框相关元素
     const eliteCheck = document.getElementById('includeElite');
     const adapt0Check = document.getElementById('adapt0Done');
     const adapt1Check = document.getElementById('adapt1Done');
     const adapt2Check = document.getElementById('adapt2Done');
-    const adaptOptions = document.getElementById('adaptOptions');
     const levelOptions = document.getElementById('levelOptions');
     const currentLevelInput = document.getElementById('currentLevel');
     const projectSelect = document.getElementById('projectSelect');
 
-    // 为精英化复选框添加change事件
     eliteCheck.addEventListener('change', updateCheckboxVisibility);
 
-    // 定义更新复选框可见性的函数
     function updateCheckboxVisibility() {
-        // 如果不是角色等级，直接隐藏整个选项区域并返回
         if (projectSelect.value !== '角色等级') {
             levelOptions.style.display = 'none';
             return;
@@ -592,16 +557,13 @@ function initPlanner() {
             return;
         }
 
-        // 记录当前适配复选框的勾选状态
         const adapt0Checked = adapt0Check.checked;
         const adapt1Checked = adapt1Check.checked;
         const adapt2Checked = adapt2Check.checked;
 
-        // 精英化复选框：当前等级为 20,40,60,80 时显示
         const showElite = [20,40,60,80].includes(cur);
         eliteCheck.parentElement.style.display = showElite ? 'inline-block' : 'none';
 
-        // 重置所有适配复选框为隐藏、可编辑
         adapt0Check.parentElement.style.display = 'none';
         adapt0Check.disabled = false;
         adapt1Check.parentElement.style.display = 'none';
@@ -609,12 +571,10 @@ function initPlanner() {
         adapt2Check.parentElement.style.display = 'none';
         adapt2Check.disabled = false;
 
-        // 根据等级显示适配复选框
         if (cur >= 20) adapt0Check.parentElement.style.display = 'inline-block';
         if (cur >= 40) adapt1Check.parentElement.style.display = 'inline-block';
         if (cur >= 60) adapt2Check.parentElement.style.display = 'inline-block';
 
-        // 强制完成：等级大于阈值时，相应适配必须已完成（勾选并禁用）
         if (cur > 40) {
             adapt0Check.checked = true;
             adapt0Check.disabled = true;
@@ -630,7 +590,6 @@ function initPlanner() {
 
         const eliteChecked = eliteCheck.checked;
 
-        // 处理阈值等级（20,40,60,80）：精英化决定对应适配的勾选和禁用
         if (cur === 20) {
             if (eliteChecked) {
                 adapt0Check.checked = true;
@@ -642,7 +601,6 @@ function initPlanner() {
         }
 
         if (cur === 40) {
-            // 蓝装（adapt0）：如果精英化勾选，则强制完成；否则恢复用户状态
             if (eliteChecked) {
                 adapt0Check.checked = true;
                 adapt0Check.disabled = true;
@@ -650,13 +608,11 @@ function initPlanner() {
                 adapt0Check.checked = adapt0Checked;
                 adapt0Check.disabled = false;
             }
-            // 紫装（adapt1）：始终可编辑，恢复用户状态，不受精英化影响
             adapt1Check.checked = adapt1Checked;
             adapt1Check.disabled = false;
         }
 
         if (cur === 60) {
-            // 紫装（adapt1）：如果精英化勾选，则强制完成；否则恢复用户状态
             if (eliteChecked) {
                 adapt1Check.checked = true;
                 adapt1Check.disabled = true;
@@ -664,13 +620,11 @@ function initPlanner() {
                 adapt1Check.checked = adapt1Checked;
                 adapt1Check.disabled = false;
             }
-            // 金装（adapt2）：始终可编辑，恢复用户状态
             adapt2Check.checked = adapt2Checked;
             adapt2Check.disabled = false;
         }
 
         if (cur === 80) {
-            // 金装（adapt2）：如果精英化勾选，则强制完成；否则恢复用户状态
             if (eliteChecked) {
                 adapt2Check.checked = true;
                 adapt2Check.disabled = true;
@@ -680,7 +634,6 @@ function initPlanner() {
             }
         }
 
-        // 对于非阈值等级，适配复选框保持用户手动状态（已被强制覆盖的除外）
         if (cur > 20 && cur < 40) {
             adapt0Check.checked = adapt0Checked;
             adapt0Check.disabled = false;
@@ -694,11 +647,9 @@ function initPlanner() {
             adapt2Check.disabled = false;
         }
 
-        // 最后显示整个选项区域
         levelOptions.style.display = 'block';
     }
 
-    // 根据干员和项目获取等级范围
     function getProjectRange(干员, 项目) {
         const generic = mapSkillToGeneric(干员, 项目);
         if (generic.startsWith('技能')) {
@@ -710,25 +661,21 @@ function initPlanner() {
         if (generic === '能力值（信赖）') return { min: 0, max: 4 };
         if (generic === '天赋') return { min: 0, max: 4 };
         if (generic === '基建') return { min: 0, max: 4 };
-        // 其他通用项目（如精0等级等）已被过滤，但以防万一
         return { min: 0, max: 90 };
     }
 
-    // 监听当前等级输入变化
     currentLevelInput.addEventListener('input', updateCheckboxVisibility);
 
     operatorSelect.addEventListener('change', function() {
         document.getElementById('currentLevel').value = '';
         document.getElementById('targetLevel').value = '';
-        
+
         const curInput = document.getElementById('currentLevel');
         const tarInput = document.getElementById('targetLevel');
         curInput.value = '';
         tarInput.value = '';
-        // 清除上次保存的值
         curInput.removeAttribute('data-last-value');
         tarInput.removeAttribute('data-last-value');
-         // 重置范围
         curInput.min = 1;
         curInput.max = 90;
         tarInput.min = 1;
@@ -741,10 +688,8 @@ function initPlanner() {
             return;
         }
         let projects = getAvailableProjects(op);
-        // 过滤掉精0-4等级
         const levelProjects = ['精0等级', '精1等级', '精2等级', '精3等级', '精4等级'];
         projects = projects.filter(p => !levelProjects.includes(p));
-        // 添加“角色等级”选项
         projects.unshift('角色等级');
         projectSelect.disabled = false;
         projectSelect.innerHTML = '<option value="">请选择升级项目</option>';
@@ -756,7 +701,6 @@ function initPlanner() {
         });
     });
 
-    // projectSelect 事件监听器
     projectSelect.addEventListener('change', function() {
         const selectedProj = this.value;
         const selectedOp = operatorSelect.value;
@@ -768,7 +712,6 @@ function initPlanner() {
             updateCheckboxVisibility();
             return;
         }
-        // 获取项目范围
         const range = getProjectRange(selectedOp, selectedProj);
         curInput.min = range.min;
         curInput.max = range.max;
@@ -778,7 +721,6 @@ function initPlanner() {
         if (selectedProj === '角色等级') {
             curInput.value = 1;
             tarInput.value = 90;
-            // 保存初始值
             curInput.setAttribute('data-last-value', curInput.value);
             tarInput.setAttribute('data-last-value', tarInput.value);
             updateCheckboxVisibility();
@@ -792,10 +734,9 @@ function initPlanner() {
         if (matchingRows.length > 0) {
             const minRow = matchingRows.reduce((min, row) => {
                 return row.现等级 < min.现等级 ? row : min;
-            }, matchingRows[0]);        
+            }, matchingRows[0]);
             curInput.value = minRow.现等级;
             tarInput.value = minRow.目标等级;
-            // 保存初始值
             curInput.setAttribute('data-last-value', curInput.value);
             tarInput.setAttribute('data-last-value', tarInput.value);
         } else {
@@ -858,7 +799,6 @@ function initPlanner() {
         alert("手动添加行功能暂未实现，请使用计算按钮添加。（别问，这个按钮纯用来占位的）");
     });
 
-    // 计算精英阶段材料及实际范围
     function calculateEliteWithRange(干员, 现等级, 目标等级, eliteDone) {
         let total = {};
         MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
@@ -876,7 +816,6 @@ function initPlanner() {
             const threshold = eliteThresholds[i];
             if (目标等级 >= threshold) {
                 if (现等级 < threshold) {
-                    // 未来阶段，必须添加
                     const stageRes = calculateMaterials(干员, "精英阶段", eliteStages[i].from, eliteStages[i].to);
                     if (stageRes) {
                         MATERIAL_COLUMNS.forEach(mat => total[mat] += stageRes[mat] || 0);
@@ -884,7 +823,6 @@ function initPlanner() {
                         if (maxTo === null || eliteStages[i].to > maxTo) maxTo = eliteStages[i].to;
                     }
                 } else if (现等级 === threshold && !eliteDone) {
-                    // 当前阶段且未完成，添加
                     const stageRes = calculateMaterials(干员, "精英阶段", eliteStages[i].from, eliteStages[i].to);
                     if (stageRes) {
                         MATERIAL_COLUMNS.forEach(mat => total[mat] += stageRes[mat] || 0);
@@ -899,7 +837,6 @@ function initPlanner() {
         return { materials: total, from: minFrom, to: maxTo };
     }
 
-    // 计算装备适配材料及实际范围
     function calculateAdaptWithRange(干员, 现等级, 目标等级, adapt0Done, adapt1Done, adapt2Done) {
         let total = {};
         MATERIAL_COLUMNS.forEach(mat => total[mat] = 0);
@@ -912,7 +849,6 @@ function initPlanner() {
         ];
 
         for (let stage of adaptStages) {
-            // 如果目标等级需要跨越该门槛（目标 > threshold），且当前等级还在该阶段的有效区间内（现等级 < threshold + 20），且该阶段未完成，则添加
             if (目标等级 > stage.threshold && 现等级 < stage.threshold + 20 && !stage.done) {
                 const stageRes = calculateMaterials(干员, "装备适配", stage.from, stage.to);
                 if (stageRes) {
@@ -927,7 +863,6 @@ function initPlanner() {
         return { materials: total, from: minFrom, to: maxTo };
     }
 
-    // 一键移除全部
     document.getElementById('removeAllBtn')?.addEventListener('click', function() {
         if (planRows.length === 0) {
             alert('没有计划可移除');
@@ -942,7 +877,6 @@ function initPlanner() {
         }
     });
 
-    // 刷新计划按钮
     document.getElementById('refreshPlansBtn')?.addEventListener('click', function() {
         if (planRows.length === 0) {
             alert('没有计划可刷新');
@@ -953,7 +887,7 @@ function initPlanner() {
         }
     });
 
-    // 初次渲染（表头、汇总行）
+    // 初次渲染
     renderTableHeader();
     createSummaryRows();
     updateExpValues();
@@ -961,4 +895,8 @@ function initPlanner() {
 
     // 加载计划数据
     loadPlansFromStorage();
+
+    // 为等级输入框添加钳位
+    setupLevelInputClamp(document.getElementById('currentLevel'));
+    setupLevelInputClamp(document.getElementById('targetLevel'));
 }

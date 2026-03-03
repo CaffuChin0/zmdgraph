@@ -55,6 +55,13 @@ button:hover {
     font-size: 13px;
 }
 
+.plan-table-wrapper {
+    overflow-x: auto !important;
+    overflow-y: auto !important;   /* 启用垂直滚动 */
+    max-height: 1000px;             /* 可根据需要调整，例如 80vh */
+    position: relative;            /* 保持原有定位 */
+}
+
 /* 表格容器（负责横向滚动） */
 .table-container {
     overflow-x: auto;
@@ -102,16 +109,37 @@ button:hover {
     font-weight: bold;
 }
 
+/* 库存行单元格背景 */
+.inventory-row th,
+.inventory-row td {
+    background-color: #fff3cd !important;
+}
+/* 缺少行单元格背景 */
+.missing-row th,
+.missing-row td {
+    background-color: #f8d7da !important;
+}
+/* 合计行单元格背景 */
+.total-row th,
+.total-row td {
+    background-color: #d1ecf1 !important;
+}
+/* 标题行（第一行）单元格背景 */
+#planTable thead tr:first-child th,
+#planTable thead tr:first-child td {
+    background-color: #e9ecef !important;
+}
+
 /* 普通计划行默认背景为白色 */
 #planTable tbody tr {
     background: white;
 }
 
-/* ===== 表头整体垂直固定 ===== */
+/* 表头单元格垂直固定 */
 #planTable thead {
     position: sticky;
     top: 0;
-    z-index: 9; /* 低于固定列，高于普通行 */
+    z-index: 9;
 }
 
 /* 标题行（第一行）背景色单独设置 */
@@ -129,81 +157,73 @@ button:hover {
 #planTable th:nth-child(1), #planTable td:nth-child(1) {
     position: sticky;
     left: 0;
-    z-index: 10;
+    z-index: 8;
     width: 80px;
     min-width: 80px;
     max-width: 80px;
-    background: inherit;
 }
 /* 第2列：移除 */
 #planTable th:nth-child(2), #planTable td:nth-child(2) {
     position: sticky;
     left: 80px;
-    z-index: 10;
+    z-index: 8;
     width: 70px;
     min-width: 70px;
     max-width: 70px;
-    background: inherit;
 }
 /* 第3列：完成 */
 #planTable th:nth-child(3), #planTable td:nth-child(3) {
     position: sticky;
     left: 150px;
-    z-index: 10;
+    z-index: 8;
     width: 60px;
     min-width: 60px;
     max-width: 60px;
-    background: inherit;
 }
 /* 第4列：隐藏 */
 #planTable th:nth-child(4), #planTable td:nth-child(4) {
     position: sticky;
     left: 210px;
-    z-index: 10;
+    z-index: 8;
     width: 60px;
     min-width: 60px;
     max-width: 60px;
-    background: inherit;
 }
 /* 第5列：干员 */
 #planTable th:nth-child(5), #planTable td:nth-child(5) {
     position: sticky;
     left: 270px;
-    z-index: 10;
+    z-index: 8;
     width: 100px;
     min-width: 100px;
     max-width: 100px;
-    background: inherit;
 }
 /* 第6列：升级项目 */
 #planTable th:nth-child(6), #planTable td:nth-child(6) {
     position: sticky;
     left: 370px;
-    z-index: 10;
+    z-index: 8;
     width: 250px;
     min-width: 250px;
     max-width: 250px;
-    background: inherit;
 }
 /* 第7列：现等级 */
 #planTable th:nth-child(7), #planTable td:nth-child(7) {
     position: sticky;
     left: 620px;
-    z-index: 10;
+    z-index: 8;
     width: 80px;
     min-width: 80px;
     max-width: 80px;
-    background: inherit;
 }
 /* 第8列：目标等级 */
 #planTable th:nth-child(8), #planTable td:nth-child(8) {
     position: sticky;
     left: 700px;
-    z-index: 10;
+    z-index: 8;
     width: 100px;
     min-width: 100px;
     max-width: 100px;
-    background: inherit;
 }
 
 /* 库存输入框 */
@@ -395,6 +415,7 @@ input[type=number] {
         max-width: 80px;
         background: inherit !important;
     }
+
     /* 取消其他列锁定，避免渲染问题 */
     #planTable th:nth-child(2),
     #planTable td:nth-child(2),
@@ -418,10 +439,10 @@ input[type=number] {
 
     /* 干员添加页面的项目表格容器 */
     #operatorProjectTable {
-        font-size: 16px; /* 适当增大字体方便点击 */
+        font-size: 16px;
     }
     #operatorProjectTable input[type=number] {
-        width: 50px; /* 缩小输入框宽度以适应屏幕 */
+        width: 50px;
         font-size: 14px;
     }
 
@@ -430,37 +451,31 @@ input[type=number] {
         overflow-x: auto;
     }
     #demandMaterials table {
-        min-width: 600px; /* 保证表格内容不被压缩，允许横向滚动 */
+        min-width: 600px;
         font-size: 13px;
     }
     #demandMaterials td {
-        white-space: nowrap; /* 材料列内的图标和文字不换行，保持一行显示 */
+        white-space: nowrap;
         padding: 6px 4px;
     }
     #demandMaterials td:last-child {
-        white-space: normal; /* 材料列内容较多，允许换行 */
+        white-space: normal;
     }
     #demandMaterials img {
         width: 20px;
         height: 20px;
     }
 
-    /* 培养表页面表格容器 */
-    .table-container {
-        overflow-x: auto;
-    }
-
-    /* 培养表容器 - 强制横向滚动 */
+    /* 培养表容器 - 只允许横向滚动，垂直滚动由页面处理 */
     .plan-table-wrapper {
         overflow-x: auto !important;
-        overflow-y: auto !important;  /* 允许垂直滚动 */
+        overflow-y: visible !important;
         -webkit-overflow-scrolling: touch;
         width: 100%;
-        max-height: 600px;  /* 可根据需要调整 */
     }
 
     #planTable {
-        min-width: 800px; /* 确保计划表可横向滚动 */
+        min-width: 800px;
     }
 
     /* 材料列表头保持可见 */

@@ -341,22 +341,57 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj,skipSave = fals
 
 // 隐藏零材料列
 function hideZeroColumns() {
-    const hasPlans = planRows.length > 0; // 是否有计划行
+    const hasPlans = planRows.length > 0;
+
+    // 如果没有计划，则显示所有列（不隐藏任何列）
+    if (!hasPlans) {
+        MATERIAL_COLUMNS.forEach(mat => {
+            document.querySelector(`#planTable thead th[data-material="${mat}"]`)?.style.setProperty('display', '', 'important');
+            document.querySelectorAll(`#planBody td[data-material="${mat}"]`).forEach(td => td.style.display = '');
+            document.querySelectorAll(`#summaryRows td[data-material="${mat}"]`).forEach(td => td.style.display = '');
+        });
+        return;
+    }
+
+    // 获取各种经验值的合计（用于判断是否需要显示对应组）
+    const getTotal = (mat) => parseFloat(document.querySelector(`.total-value[data-material="${mat}"]`)?.textContent) || 0;
+    const recordExpTotal = getTotal("作战记录经验值");
+    const cognitionExpTotal = getTotal("认知载体经验值");
+    const weaponExpTotal = getTotal("武器经验值");
+
+    // 定义各组经验材料
+    const recordExpGroup = ["作战记录经验值", "高级作战记录", "中级作战记录", "初级作战记录"];
+    const cognitionExpGroup = ["认知载体经验值", "高级认知载体", "初级认知载体"];
+    const weaponExpGroup = ["武器经验值", "武器检查单元", "武器检查装置", "武器检查套组"];
+
     MATERIAL_COLUMNS.forEach(mat => {
-        const totalCell = document.querySelector(`.total-value[data-material="${mat}"]`);
-        const total = totalCell ? parseFloat(totalCell.textContent) || 0 : 0;
-        // 没有计划行时不隐藏任何列，否则只隐藏合计为零的列
-        const shouldHide = hasPlans && total === 0;
+        let shouldHide = true; // 默认隐藏
+
+        // 根据材料所属组别决定是否隐藏
+        if (recordExpGroup.includes(mat)) {
+            shouldHide = recordExpTotal === 0; // 作战记录经验值为0则隐藏该组
+        } else if (cognitionExpGroup.includes(mat)) {
+            shouldHide = cognitionExpTotal === 0; // 认知载体经验值为0则隐藏该组
+        } else if (weaponExpGroup.includes(mat)) {
+            shouldHide = weaponExpTotal === 0; // 武器经验值为0则隐藏该组
+        } else {
+            // 其他材料：根据自身合计是否为0决定是否隐藏
+            const total = getTotal(mat);
+            shouldHide = total === 0;
+        }
+
+        // 应用隐藏/显示
+        const display = shouldHide ? 'none' : '';
 
         // 隐藏主表格表头
         const th = document.querySelector(`#planTable thead th[data-material="${mat}"]`);
-        if (th) th.style.setProperty('display', shouldHide ? 'none' : '', 'important');
+        if (th) th.style.setProperty('display', display, 'important');
 
         // 隐藏计划行中的对应列
-        document.querySelectorAll(`#planBody td[data-material="${mat}"]`).forEach(td => td.style.display = shouldHide ? 'none' : '');
+        document.querySelectorAll(`#planBody td[data-material="${mat}"]`).forEach(td => td.style.display = display);
 
         // 隐藏汇总行中的对应列（库存、缺少、合计）
-        document.querySelectorAll(`#summaryRows td[data-material="${mat}"]`).forEach(td => td.style.display = shouldHide ? 'none' : '');
+        document.querySelectorAll(`#summaryRows td[data-material="${mat}"]`).forEach(td => td.style.display = display);
     });
 }
 

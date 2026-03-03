@@ -58,7 +58,7 @@ button:hover {
 .plan-table-wrapper {
     overflow-x: auto !important;
     overflow-y: auto !important;   /* 启用垂直滚动 */
-    max-height: 1000px;             /* 可根据需要调整，例如 80vh */
+    max-height: 1000px;            
     position: relative;            /* 保持原有定位 */
 }
 
@@ -152,7 +152,6 @@ button:hover {
     background-color: #3a3a3a !important;
 }
 
-/* ===== 固定列（前8列）：水平粘性 ===== */
 /* 第1列：头像 */
 #planTable th:nth-child(1), #planTable td:nth-child(1) {
     position: sticky;
@@ -635,7 +634,7 @@ body.night-mode .panel {
     color: #aaa;
 }
 
-/* 材料图标保持原样或适当调暗（可选） */
+/* 材料图标保持原样或适当调暗 */
 .night-mode img {
     opacity: 0.9;
 }
@@ -792,4 +791,38 @@ body.night-mode .panel {
     .stock-grid {
         grid-template-columns: repeat(1, 1fr) !important; /* 更窄屏幕下改为1列 */
     }
+}
+
+/* 表头各行的边框颜色与背景色一致，防止缝隙透出 */
+.inventory-row th,
+.inventory-row td {
+    border-color: #fff3cd !important;
+}
+.missing-row th,
+.missing-row td {
+    border-color: #f8d7da !important;
+}
+.total-row th,
+.total-row td {
+    border-color: #d1ecf1 !important;
+}
+#planTable thead tr:first-child th,
+#planTable thead tr:first-child td {
+    border-color: #e9ecef !important;
+}
+
+#planTable thead {
+    background: transparent;
+}
+
+/* 为计划行中的前8列设置白色背景，防止透出 */
+#planTable tbody td:nth-child(1),
+#planTable tbody td:nth-child(2),
+#planTable tbody td:nth-child(3),
+#planTable tbody td:nth-child(4),
+#planTable tbody td:nth-child(5),
+#planTable tbody td:nth-child(6),
+#planTable tbody td:nth-child(7),
+#planTable tbody td:nth-child(8) {
+    background-color: white !important;
 }

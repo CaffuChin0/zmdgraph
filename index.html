@@ -25,23 +25,51 @@
 
     <!-- 首页页面 -->
     <div id="page-home" class="page active">
-        <div class="panel" style="background: #e2f0d9;">
-            <h2>欢迎使用终末地养成规划计算器</h2>
-            <p style="margin:0 0 8px 0; color: black;"><strong> 公告：</strong></p>
-            <ul style="margin:0 0 8px 20px; color: black; padding-left:0;">
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-14</strong>：项目启动，规划计算器框架搭建。</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-15</strong>：优化Excel数据方案，实现自动计算、跨级累加等功能。</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-16</strong>：部署GitHub Pages，发布初版网页样式。</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-17</strong>：新增支持多页面切换、优化培养表界面。</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-18</strong>：优化升级项目界面。</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-19</strong>：新增干员添加页面、支持一键拉满同个干员进行计算。修复bug:表格自动填写最小值导致无法自己输入对应现有等级</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-21</strong>：适配手机端界面，新增夜间模式，支持培养表一键清除所有计划。</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-24</strong>：在一键计算时新增一行总和确认该计算需求。添加武器养成界面，支持武器素材计算。</li>  
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-25</strong>：修改角色升级计算逻辑。新增库存界面用于输入目前仓库内素材库存。新增设置界面可导出导入备份计划。新增规划界面算出需要多长时间把角色计划练好。</li>               
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-02-26</strong>：修复bug：培养表及库存不联动（已修复）、规划表计算材料不计算当前库存（已修复）、规划表联动当前库存（已修复）。</li>
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-03-03</strong>：修复bug：角色突破未显示柱状菌。（已修复）添加刷新按钮进行计划刷新。培养表材料列显示逻辑优化。</li>  
-                <li style="margin:8px 0; list-style-type: none;"><strong>2026-03-04</strong>：培养表表头固定最上方以便对照。</li>                 
-            </ul>
+        <div class="panel" style="background: #e2f0d9; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <h2 style="margin-top:0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #1e7e34; border-bottom: 2px solid #b7d7b0; padding-bottom: 10px;">
+                <span style="font-size: 28px;">📋</span> 更新日志
+            </h2>
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; align-items: baseline;">
+                
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center; white-space: nowrap;">2026-03-04</div>
+                <div style="color: #1e3a2e;">✨ 表头固定优化，滚动时始终可见，方便对照材料</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-03-03</div>
+                <div style="color: #1e3a2e;">🔧 修复突破材料显示、新增刷新计划按钮、优化材料列显示逻辑</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-26</div>
+                <div style="color: #1e3a2e;">🔄 修复培养表与库存联动、规划表计算不包含库存的问题</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-25</div>
+                <div style="color: #1e3a2e;">📦 新增库存管理、数据备份与恢复、规划天数计算</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-24</div>
+                <div style="color: #1e3a2e;">🗡️ 武器养成界面、需求材料总和显示</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-21</div>
+                <div style="color: #1e3a2e;">📱 手机端适配、夜间模式、一键移除所有计划</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-19</div>
+                <div style="color: #1e3a2e;">➕ 干员一键拉满、修复输入框最小值自动填充问题</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-18</div>
+                <div style="color: #1e3a2e;">⚙️ 优化升级项目界面交互</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-17</div>
+                <div style="color: #1e3a2e;">🔄 多页面切换支持、培养表界面优化</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-16</div>
+                <div style="color: #1e3a2e;">🚀 GitHub Pages 初版发布</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-15</div>
+                <div style="color: #1e3a2e;">📈 跨级累加计算、自动计算优化</div>
+
+                <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center;">2026-02-14</div>
+                <div style="color: #1e3a2e;">🎉 项目启动，框架搭建</div>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.95em; color: #2d6a4f; border-top: 1px dashed #b7d7b0; padding-top: 12px; text-align: center;">
+                ⚡ 持续优化中，欢迎反馈 B站@咩夸攻略组 或加QQ群 107876145
+            </p>
         </div>
     </div>
 

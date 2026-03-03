@@ -25,21 +25,21 @@ function createSummaryRows() {
     const oldSummary = document.getElementById('summaryRows');
     if (oldSummary) oldSummary.remove();
 
-    const tbody = document.createElement('tbody');
-    tbody.id = 'summaryRows';
+    const thead = planTable.querySelector('thead');
 
+ 
     // 库存行
     const stockRow = document.createElement('tr');
-    stockRow.className = 'inventory-row';
-    // 前8列：第一个单元格显示“库存”，其余留空
+    stockRow.className = 'inventory-row summary-row';
+    // 前4个单元格用于“库存”标签及占位
     for (let i = 0; i < 4; i++) {
         const td = document.createElement('td');
         if (i === 0) td.textContent = '库存';
         stockRow.appendChild(td);
     }
+    // 再补4个空单元格（对应移除、完成、隐藏、干员等，但已在表头占用，这里只是占位）
     for (let i = 0; i < 4; i++) stockRow.appendChild(document.createElement('td'));
 
-    // 材料列
     MATERIAL_COLUMNS.forEach(mat => {
         const td = document.createElement('td');
         td.setAttribute('data-material', mat);
@@ -56,8 +56,8 @@ function createSummaryRows() {
             input.min = '0';
             input.className = 'stock-input stock-value';
             input.dataset.material = mat;
+            // 保留原有的 input 事件逻辑（请从原函数中复制完整代码）
             input.addEventListener('input', function() {
-                // 钳位：确保不小于0
                 let val = parseInt(this.value, 10);
                 if (isNaN(val)) {
                     this.value = 0;
@@ -66,7 +66,6 @@ function createSummaryRows() {
                     if (val < min) this.value = min;
                 }
                 if (_loading) return;
-                // 经验材料包括干员和武器的经验材料
                 const expMaterials = ["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体",
                                     "武器检查单元","武器检查装置","武器检查套组"];
                 if (expMaterials.includes(mat)) {
@@ -75,25 +74,19 @@ function createSummaryRows() {
                     updateMissingRow();
                 }
                 saveStockToStorage();
-                // 同步库存页面的对应输入框
                 const stockInput = document.querySelector(`#page-stock .stock-input[data-material="${mat}"]`);
-                if (stockInput) {
-                    stockInput.value = this.value;
-                }
-                // 刷新规划页面
-                if (typeof refreshPlan === 'function') {
-                    refreshPlan();
-                }
+                if (stockInput) stockInput.value = this.value;
+                if (typeof refreshPlan === 'function') refreshPlan();
             });
             td.appendChild(input);
         }
         stockRow.appendChild(td);
     });
-    tbody.appendChild(stockRow);
+    thead.appendChild(stockRow);
 
     // 缺少行
     const missingRow = document.createElement('tr');
-    missingRow.className = 'missing-row';
+    missingRow.className = 'missing-row summary-row';
     for (let i = 0; i < 4; i++) {
         const td = document.createElement('td');
         if (i === 0) td.textContent = '缺少';
@@ -108,11 +101,11 @@ function createSummaryRows() {
         td.textContent = '0';
         missingRow.appendChild(td);
     });
-    tbody.appendChild(missingRow);
+    thead.appendChild(missingRow);
 
     // 合计行
     const totalRow = document.createElement('tr');
-    totalRow.className = 'total-row';
+    totalRow.className = 'total-row summary-row';
     for (let i = 0; i < 4; i++) {
         const td = document.createElement('td');
         if (i === 0) td.textContent = '合计';
@@ -127,11 +120,7 @@ function createSummaryRows() {
         td.textContent = '0';
         totalRow.appendChild(td);
     });
-    tbody.appendChild(totalRow);
-
-    // 插入到 thead 之后，planBody 之前
-    const thead = planTable.querySelector('thead');
-    thead.insertAdjacentElement('afterend', tbody);
+    thead.appendChild(totalRow);
 }
 
 // 更新合计行和缺少行
@@ -389,9 +378,9 @@ function hideZeroColumns() {
 
         // 隐藏计划行中的对应列
         document.querySelectorAll(`#planBody td[data-material="${mat}"]`).forEach(td => td.style.display = display);
-
+        
         // 隐藏汇总行中的对应列（库存、缺少、合计）
-        document.querySelectorAll(`#summaryRows td[data-material="${mat}"]`).forEach(td => td.style.display = display);
+        document.querySelectorAll(`#planTable .summary-row td[data-material="${mat}"]`).forEach(td => td.style.display = shouldHide ? 'none' : '');
     });
 }
 

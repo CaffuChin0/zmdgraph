@@ -104,18 +104,13 @@
                     <button id="removeAllBtn" style="background-color: #dc3545; margin-left: 10px;">🗑️ 一键移除全部</button>
                 </div>
             </div>
-            <div class="plan-table-wrapper" style="overflow-x: auto;">
+            <div class="plan-table-wrapper" style="overflow-x: auto; position: relative;">
+                <!-- 固定表头容器 -->
+                <div id="sticky-header" style="position: sticky; top: 0; z-index: 20; background: white; overflow: hidden; width: max-content;"></div>
                 <table id="planTable">
                     <thead>
                         <tr>
-                            <th></th>
-                            <th>移除</th>
-                            <th>完成</th>
-                            <th>隐藏</th>
-                            <th>干员</th>
-                            <th>升级项目</th>
-                            <th>现等级</th>
-                            <th>目标等级</th>
+                            <th></th><th>移除</th><th>完成</th><th>隐藏</th><th>干员</th><th>升级项目</th><th>现等级</th><th>目标等级</th>
                             <!-- 材料列由 JS 动态生成 -->
                         </tr>
                     </thead>

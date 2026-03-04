@@ -22,7 +22,7 @@ function renderPlanPage() {
 function getMissingMaterials() {
     const missing = {};
     MATERIAL_COLUMNS.forEach(mat => missing[mat] = 0);
-    document.querySelectorAll('#summaryRows .missing-value').forEach(td => {
+    document.querySelectorAll('.missing-row td.missing-value').forEach(td => {
         const mat = td.dataset.material;
         if (mat) {
             missing[mat] = parseFloat(td.textContent) || 0;

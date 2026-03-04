@@ -6,14 +6,9 @@ function renderTableHeader() {
     MATERIAL_COLUMNS.forEach(mat => {
         const th = document.createElement('th');
         th.setAttribute('data-material', mat);
-        const icon = document.createElement('img');
-        icon.src = MATERIAL_ICONS[mat] || DEFAULT_ICON;
-        icon.style.width = '20px';
-        icon.style.height = '20px';
-        icon.style.marginRight = '5px';
-        icon.style.verticalAlign = 'middle';
-        th.appendChild(icon);
-        th.appendChild(document.createTextNode(mat));
+
+        // 改为两行显示：图标在上，文字在下
+        th.innerHTML = `<img src="${MATERIAL_ICONS[mat] || DEFAULT_ICON}" style="width:20px;height:20px;display:block;margin:0 auto 4px;"><span>${mat}</span>`;
         theadRow.appendChild(th);
     });
 }

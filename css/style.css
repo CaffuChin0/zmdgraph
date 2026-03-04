@@ -56,9 +56,9 @@ button:hover {
 }
 
 .plan-table-wrapper {
-    overflow-x: auto !important;
+    overflow-x: scroll !important;
     overflow-y: auto !important;   /* 启用垂直滚动 */
-    max-height: 1000px;            
+    max-height: 600px;            
     position: relative;            /* 保持原有定位 */
 }
 
@@ -113,23 +113,26 @@ button:hover {
 .inventory-row th,
 .inventory-row td {
     background-color: #fff3cd !important;
+    border-color: #fff3cd !important;   /* 新增 */
 }
 /* 缺少行单元格背景 */
 .missing-row th,
 .missing-row td {
     background-color: #f8d7da !important;
+    border-color: #f8d7da !important;
 }
 /* 合计行单元格背景 */
 .total-row th,
 .total-row td {
     background-color: #d1ecf1 !important;
+    border-color: #d1ecf1 !important;
 }
 /* 标题行（第一行）单元格背景 */
 #planTable thead tr:first-child th,
 #planTable thead tr:first-child td {
     background-color: #e9ecef !important;
+    border-color: #e9ecef !important;
 }
-
 /* 普通计划行默认背景为白色 */
 #planTable tbody tr {
     background: white;
@@ -360,6 +363,28 @@ button:hover {
     margin-right: 4px;
 }
 
+/* 武器添加需求表格样式 */
+#weaponDemandMaterials table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+}
+#weaponDemandMaterials th,
+#weaponDemandMaterials td {
+    border: 1px solid #e0e0e0;
+    padding: 8px;
+    text-align: center;
+}
+#weaponDemandMaterials td:last-child {
+    text-align: left; /* 材料列左对齐 */
+}
+#weaponDemandMaterials img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
 /* 移除数字输入框的上下箭头 */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
@@ -505,11 +530,17 @@ input[type=number] {
 
 /* 干员添加总和表格样式 */
 .total-sum-row {
-    background-color: #d4edda; /* 浅绿 */
+    background-color: #d4edda !important; /* 浅绿 */
     font-weight: bold;
 }
+.total-sum-row td {
+    background-color: #d4edda !important;
+}
 .night-mode .total-sum-row {
-    background-color: #2a5a2a; /* 深绿 */
+    background-color: #2a5a2a !important; /* 深绿 */
+}
+.night-mode .total-sum-row td {
+    background-color: #2a5a2a !important;
 }
 
 /* 夜间模式变量 */
@@ -571,6 +602,13 @@ body.night-mode .panel {
     color: #e0e0e0;
 }
 
+/* 首页更新日志正文文字夜间模式 */
+.night-mode #page-home .panel h2,
+.night-mode #page-home .panel p,
+.night-mode #page-home .panel > div[style*="display: grid"] > div:not([style*="background"]) {
+    color: #e0e0e0 !important;
+}
+
 /* 表头特殊背景 */
 .night-mode #planTable thead th,
 .night-mode #operatorProjectTable th,
@@ -587,6 +625,35 @@ body.night-mode .panel {
 }
 .night-mode .total-row {
     background-color: #2e3a4a !important;
+}
+
+.night-mode .inventory-row th,
+.night-mode .inventory-row td {
+    background-color: #3d3a2e !important;
+    border-color: #3d3a2e !important;
+}
+.night-mode .missing-row th,
+.night-mode .missing-row td {
+    background-color: #4a2e2e !important;
+    border-color: #4a2e2e !important;
+}
+.night-mode .total-row th,
+.night-mode .total-row td {
+    background-color: #2e3a4a !important;
+    border-color: #2e3a4a !important;
+}
+.night-mode #planTable thead tr:first-child th,
+.night-mode #planTable thead tr:first-child td {
+    background-color: #3a3a3a !important;
+    border-color: #3a3a3a !important;
+}
+
+/* 设置页面输入框夜间模式 */
+.night-mode #dailyStaminaInput,
+.night-mode #backupText {
+    background-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+    border-color: #555 !important;
 }
 
 /* 输入框 */
@@ -793,24 +860,6 @@ body.night-mode .panel {
     }
 }
 
-/* 表头各行的边框颜色与背景色一致，防止缝隙透出 */
-.inventory-row th,
-.inventory-row td {
-    border-color: #fff3cd !important;
-}
-.missing-row th,
-.missing-row td {
-    border-color: #f8d7da !important;
-}
-.total-row th,
-.total-row td {
-    border-color: #d1ecf1 !important;
-}
-#planTable thead tr:first-child th,
-#planTable thead tr:first-child td {
-    border-color: #e9ecef !important;
-}
-
 #planTable thead {
     background: transparent;
 }
@@ -825,4 +874,15 @@ body.night-mode .panel {
 #planTable tbody td:nth-child(7),
 #planTable tbody td:nth-child(8) {
     background-color: white !important;
+}
+/* 为计划行中的前8列设置夜间背景，防止透出 */
+.night-mode #planTable tbody td:nth-child(1),
+.night-mode #planTable tbody td:nth-child(2),
+.night-mode #planTable tbody td:nth-child(3),
+.night-mode #planTable tbody td:nth-child(4),
+.night-mode #planTable tbody td:nth-child(5),
+.night-mode #planTable tbody td:nth-child(6),
+.night-mode #planTable tbody td:nth-child(7),
+.night-mode #planTable tbody td:nth-child(8) {
+    background-color: #2d2d2d !important;
 }

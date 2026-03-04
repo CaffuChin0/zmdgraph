@@ -266,7 +266,37 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
 
     // 升级项目
     const tdProj = document.createElement('td');
-    tdProj.textContent = project;
+    let projectDisplay = project;
+    // 尝试拆分为两行（仅当包含→且不是“角色等级-升级”时）
+    if (project.includes('→') && !project.startsWith('角色等级-升级')) {
+        // 找到最后一个 "→" 的位置
+        const lastArrowIndex = project.lastIndexOf('→');
+        // 向前查找空格或左括号作为分隔点
+        let splitIndex = -1;
+        for (let i = lastArrowIndex; i >= 0; i--) {
+            if (project[i] === ' ' || project[i] === '(') {
+                splitIndex = i;
+                break;
+            }
+        }
+        if (splitIndex !== -1) {
+            const name = project.substring(0, splitIndex).trim();
+            const level = project.substring(splitIndex).trim();
+            tdProj.innerHTML = `<div>${name}</div><div>${level}</div>`;
+        } else {
+            // 如果没有空格或括号，按最后一个空格分割（降级方案）
+            const parts = project.split(' ');
+            if (parts.length > 1) {
+                const level = parts.pop();
+                const name = parts.join(' ');
+                tdProj.innerHTML = `<div>${name}</div><div>${level}</div>`;
+            } else {
+                tdProj.textContent = project;
+            }
+        }
+    } else {
+        tdProj.textContent = project;
+    }
     row.appendChild(tdProj);
 
     // 现等级

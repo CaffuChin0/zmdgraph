@@ -72,7 +72,7 @@ button:hover {
 #planTable {
     table-layout: fixed;
     width: max-content;
-    border-collapse: separate;
+    border-collapse: collapse;
     background: white;
     border: 1px solid #dee2e6;
 }
@@ -205,14 +205,14 @@ button:hover {
     position: sticky;
     left: 370px;
     z-index: 8;
-    width: 250px;
-    min-width: 250px;
-    max-width: 250px;
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
 }
 /* 第7列：现等级 */
 #planTable th:nth-child(7), #planTable td:nth-child(7) {
     position: sticky;
-    left: 620px;
+    left: 520px;
     z-index: 8;
     width: 80px;
     min-width: 80px;
@@ -221,7 +221,7 @@ button:hover {
 /* 第8列：目标等级 */
 #planTable th:nth-child(8), #planTable td:nth-child(8) {
     position: sticky;
-    left: 700px;
+    left: 600px;
     z-index: 8;
     width: 100px;
     min-width: 100px;

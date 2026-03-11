@@ -178,14 +178,14 @@ button:hover {
     position: sticky;
     left: 150px;
     z-index: 8;
-    width: 60px;
-    min-width: 60px;
-    max-width: 60px;
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
 }
 /* 第4列：隐藏 */
 #planTable th:nth-child(4), #planTable td:nth-child(4) {
     position: sticky;
-    left: 210px;
+    left: 230px;
     z-index: 8;
     width: 60px;
     min-width: 60px;
@@ -194,7 +194,7 @@ button:hover {
 /* 第5列：干员 */
 #planTable th:nth-child(5), #planTable td:nth-child(5) {
     position: sticky;
-    left: 270px;
+    left: 290px;
     z-index: 8;
     width: 100px;
     min-width: 100px;
@@ -203,7 +203,7 @@ button:hover {
 /* 第6列：升级项目 */
 #planTable th:nth-child(6), #planTable td:nth-child(6) {
     position: sticky;
-    left: 370px;
+    left: 390px;
     z-index: 8;
     width: 150px;
     min-width: 150px;
@@ -212,7 +212,7 @@ button:hover {
 /* 第7列：现等级 */
 #planTable th:nth-child(7), #planTable td:nth-child(7) {
     position: sticky;
-    left: 520px;
+    left: 540px;
     z-index: 8;
     width: 80px;
     min-width: 80px;
@@ -221,7 +221,7 @@ button:hover {
 /* 第8列：目标等级 */
 #planTable th:nth-child(8), #planTable td:nth-child(8) {
     position: sticky;
-    left: 600px;
+    left: 620px;
     z-index: 8;
     width: 100px;
     min-width: 100px;
@@ -885,4 +885,12 @@ body.night-mode .panel {
 .night-mode #planTable tbody td:nth-child(7),
 .night-mode #planTable tbody td:nth-child(8) {
     background-color: #2d2d2d !important;
+}
+
+.night-mode #planTable td:nth-child(3) button {
+    background-color: #28a745;
+    color: white;
+}
+.night-mode #planTable td:nth-child(3) button:hover {
+    background-color: #1e7e34;
 }

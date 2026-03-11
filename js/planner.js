@@ -195,7 +195,7 @@ function updateMissingRow() {
 }
 
 // 添加计划行
-function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = false) {
+function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = false, hidden = false) {
     const tbody = document.getElementById('planBody');
     const row = document.createElement('tr');
 
@@ -233,14 +233,42 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
 
     // 完成列
     const tdDone = document.createElement('td');
-    const doneChk = document.createElement('input');
-    doneChk.type = 'checkbox';
-    doneChk.className = 'complete-checkbox';
-    doneChk.addEventListener('change', function() {
-        updateSummaryRows();
-        row.classList.toggle('completed-row', this.checked);
-    });
-    tdDone.appendChild(doneChk);
+    const completeBtn = document.createElement('button');
+    completeBtn.textContent = '完成';
+    completeBtn.style.backgroundColor = '#28a745';
+    completeBtn.style.color = 'white';
+    completeBtn.style.border = 'none';
+    completeBtn.style.padding = '4px 8px';
+    completeBtn.style.borderRadius = '4px';
+    completeBtn.style.cursor = 'pointer';
+    completeBtn.onclick = function() {
+        const index = Array.from(tbody.children).indexOf(row);
+        if (index !== -1) {
+            const plan = planRows[index];
+            // 扣除库存
+            MATERIAL_COLUMNS.forEach(mat => {
+                const amount = plan.materials[mat] || 0;
+                if (amount > 0) {
+                    // 找到培养表库存行中对应的输入框
+                    const stockInput = document.querySelector(`.inventory-row .stock-input[data-material="${mat}"]`);
+                    if (stockInput) {
+                        let currentStock = parseInt(stockInput.value, 10) || 0;
+                        const newStock = Math.max(0, currentStock - amount);
+                        stockInput.value = newStock;
+                        // 触发 input 事件，同步更新相关数据
+                        stockInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+            });
+            // 删除行
+            planRows.splice(index, 1);
+            tbody.removeChild(row);
+            updateSummaryRows();
+            savePlansToStorage();
+            if (typeof refreshPlan === 'function') refreshPlan();
+        }
+    };
+    tdDone.appendChild(completeBtn);
     row.appendChild(tdDone);
 
     // 隐藏列
@@ -248,13 +276,23 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
     const hideChk = document.createElement('input');
     hideChk.type = 'checkbox';
     hideChk.className = 'hide-checkbox';
+    hideChk.checked = hidden;
+    if (hidden) {
+        row.classList.add('hidden-row');
+    }
     hideChk.addEventListener('change', function() {
-        if (this.checked) {
-            row.classList.add('hidden-row');
-        } else {
-            row.classList.remove('hidden-row');
+        const index = Array.from(tbody.children).indexOf(row);
+        if (index !== -1) {
+            if (this.checked) {
+                row.classList.add('hidden-row');
+                planRows[index].hidden = true;
+            } else {
+                row.classList.remove('hidden-row');
+                planRows[index].hidden = false;
+            }
+            updateSummaryRows();
+            savePlansToStorage();
         }
-        updateSummaryRows();
     });
     tdHide.appendChild(hideChk);
     row.appendChild(tdHide);
@@ -335,7 +373,8 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
         materials: MATERIAL_COLUMNS.reduce((acc, mat) => {
             acc[mat] = materialObj[mat] || 0;
             return acc;
-        }, {})
+        }, {}),
+        hidden : hidden
     });
 
     updateSummaryRows();
@@ -435,7 +474,8 @@ function loadPlansFromStorage() {
         tbody.innerHTML = '';
         planRows = [];
         plans.forEach(p => {
-            addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true);
+            const hidden = p.hidden !== undefined ? p.hidden : false;
+            addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true, hidden);
         });
         _loading = false;
         updateSummaryRows();

@@ -33,6 +33,10 @@ function initOperatorAdd() {
         } else {
             clearTable(); // 清空表格
         }
+        // 清空之前计算需求，防止错乱
+        window.currentDemands = [];
+        const demandBody = document.getElementById('demandBody');
+        if (demandBody) demandBody.innerHTML = '';
     });
 
     // 快捷按钮事件

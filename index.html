@@ -18,6 +18,7 @@
         <a href="#table" class="nav-link" data-page="table">📋 培养表</a>
         <a href="#operator" class="nav-link" data-page="operator">➕ 干员添加</a>
         <a href="#weapon" class="nav-link" data-page="weapon">🗡️ 武器添加</a>
+        <a href="#batch" class="nav-link" data-page="batch">📎 批量添加</a>
         <a href="#plan" class="nav-link" data-page="plan">📊 规划</a>
         <a href="#stock" class="nav-link" data-page="stock">📦 库存</a>
         <a href="#settings" class="nav-link" data-page="settings">⚙️ 设置</a>
@@ -31,7 +32,7 @@
             </h2>
             <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; align-items: baseline;">
                 <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center; white-space: nowrap;">2026-03-16</div>
-                <div style="color: #1e3a2e;">🐛 修复干员切换后添加导致头像错误；库存页面图标放大</div>
+                <div style="color: #1e3a2e;">🐛 修复干员切换后添加导致头像错误；库存页面图标放大；新增批量添加页面，支持多选干员/武器生成表格；</div>
 
                 <div style="font-weight: 600; color: #2d6a4f; background: #c8e6c9; padding: 4px 12px; border-radius: 20px; text-align: center; white-space: nowrap;">2026-03-12</div>
                 <div style="color: #1e3a2e;">➕ 1.1内容数据更新：干员：汤汤；武器：落草、望乡、光荣记忆</div>
@@ -274,6 +275,44 @@
         </div>
     </div>
 
+    <!-- 批量添加页面 -->
+    <div id="page-batch" class="page">
+        <div class="panel">
+            <h2>📎 批量添加 - 干员</h2>
+            <div class="form-row">
+                <label>选择干员：</label>
+                <div id="batchOperatorChecklist" class="checklist-container">
+                    <!-- 动态生成复选框 -->
+                </div>
+            </div>
+            <div class="form-row">
+                <button id="generateOperatorBatchBtn">生成干员表格</button>
+            </div>
+            <div id="batchOperatorTableContainer" style="overflow-x:auto; margin-bottom:20px;"></div>
+
+            <h2>📎 批量添加 - 武器</h2>
+            <div class="form-row">
+                <label>选择武器：</label>
+                <div id="batchWeaponChecklist" class="checklist-container">
+                    <!-- 动态生成复选框 -->
+                </div>
+            </div>
+            <div class="form-row">
+                <button id="generateWeaponBatchBtn">生成武器表格</button>
+            </div>
+            <div id="batchWeaponTableContainer" style="overflow-x:auto; margin-bottom:20px;"></div>
+
+            <div class="form-row">
+                <button id="batchCalcDemandBtn" class="btn-info">📊 计算需求</button>
+                <button id="batchAddToPlannerBtn" class="btn-success">➕ 添加到培养表</button>
+            </div>
+            <div id="batchDemandResult" class="demand-result" style="display:none;">
+                <h3>📦 材料需求总和</h3>
+                <div id="batchDemandContent"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- 规划页面 -->
     <div id="page-plan" class="page">
         <div class="panel">
@@ -346,6 +385,7 @@
     <script src="js/plan.js"></script>          <!-- 依赖 data.js, plan.js 中的函数 -->
     <script src="js/stock.js"></script>         <!-- 依赖 planner.js 中的 updateExpValues 等 -->
     <script src="js/settings.js"></script>      <!-- 依赖 planner.js 中的 addPlanRow 等 -->
+    <script src="js/batch.js"></script>         <!-- 依赖 data.js, utils.js, planner.js, weaponAdd.js 中的函数等 -->
     <script src="js/main.js"></script>          <!-- 最后执行，调用各 init 函数 -->
 </body>
 </html>

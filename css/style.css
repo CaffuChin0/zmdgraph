@@ -894,3 +894,215 @@ body.night-mode .panel {
 .night-mode #planTable td:nth-child(3) button:hover {
     background-color: #1e7e34;
 }
+
+/* 批量表格 */
+.batch-table {
+    border-collapse: collapse;
+    background: white;
+}
+.batch-table th,
+.batch-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+.batch-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+.batch-table input[type=number] {
+    width: 60px;
+    padding: 4px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+.night-mode .batch-table {
+    background: #2d2d2d;
+}
+.night-mode .batch-table th {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #444;
+}
+.night-mode .batch-table td {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #444;
+}
+.night-mode .batch-table input {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+/* 批量页面复选框容器 */
+.checklist-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    padding: 12px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    background: #f8f9fa;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid #e9ecef;
+    font-size: 14px;
+}
+.checklist-item input[type="checkbox"] {
+    margin-right: 4px;
+}
+.night-mode .checklist-container {
+    background: #2d2d2d;
+    border-color: #444;
+}
+.night-mode .checklist-item {
+    background: #3a3a3a;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+/* 统一目标面板 */
+.batch-target-panel {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+}
+.batch-target-panel strong {
+    display: inline-block;
+    margin-right: 15px;
+    color: #495057;
+}
+.batch-target-panel label {
+    margin-right: 15px;
+    margin-bottom: 8px;
+    display: inline-block;
+    font-size: 14px;
+}
+.batch-target-panel input {
+    width: 70px;
+    margin-left: 5px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+.night-mode .batch-target-panel {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+.night-mode .batch-target-panel input {
+    background: #3a3a3a;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+/* 需求结果面板 */
+.demand-result {
+    background: #e2f0d9;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border-left: 4px solid #28a745;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.demand-result h3 {
+    margin: 0 0 15px 0;
+    color: #1e7e34;
+    font-size: 18px;
+}
+.demand-item {
+    display: inline-block;
+    margin-right: 25px;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+.demand-item img {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.night-mode .demand-result {
+    background: #2a5a2a;
+    color: #e0e0e0;
+}
+.night-mode .demand-result h3 {
+    color: #a5d6a5;
+}
+
+/* 按钮样式补充 */
+.btn-info {
+    background-color: #17a2b8;
+}
+.btn-info:hover {
+    background-color: #138496;
+}
+.btn-success {
+    background-color: #28a745;
+}
+.btn-success:hover {
+    background-color: #1e7e34;
+}
+
+/* 手机端优化 */
+@media screen and (max-width: 768px) {
+    .batch-target-panel label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    .batch-target-panel input {
+        width: 100%;
+        max-width: 100px;
+    }
+    .checklist-item {
+        font-size: 13px;
+        padding: 4px 8px;
+    }
+    #batchDemandContent .demand-item {
+        display: block;
+        margin-bottom: 8px;
+    }
+}
+
+/* 所有需要横向滚动的容器 */
+.batch-table-container,
+#batchOperatorTableContainer,
+#batchWeaponTableContainer,
+.plan-table-wrapper {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overflow-x: auto;
+    padding-bottom: 5px; /* 给滚动条留一点空间 */
+}
+
+/* 自定义滚动条样式 */
+.batch-table-container::-webkit-scrollbar,
+#batchOperatorTableContainer::-webkit-scrollbar,
+#batchWeaponTableContainer::-webkit-scrollbar,
+.plan-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+.batch-table-container::-webkit-scrollbar-thumb,
+#batchOperatorTableContainer::-webkit-scrollbar-thumb,
+#batchWeaponTableContainer::-webkit-scrollbar-thumb,
+.plan-table-wrapper::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 3px;
+}

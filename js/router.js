@@ -3,7 +3,7 @@
 function initRouter() {
     function showPageFromHash() {
         let hash = window.location.hash.slice(1) || 'home';
-        const validPages = ['home', 'table', 'operator','weapon','plan','stock','settings']; // 跳转对应页面
+        const validPages = ['home', 'table', 'operator','weapon','batch','plan','stock','settings']; // 跳转对应页面
         if (!validPages.includes(hash)) hash = 'home';
 
         document.querySelectorAll('.nav-link').forEach(link => {

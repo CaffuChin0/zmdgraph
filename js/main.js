@@ -15,6 +15,7 @@ window.onload = function() {
     initWeaponAdd(); // 在 weaponAdd.js 中定义
     initStock(); // 在 stock.js 中定义
     initSettings(); // 在 settings.js 中定义
+    initBatch(); // 在 batch.js 中定义
 
     // 加载存储数据
     loadPlansFromStorage(); // 在 planner.js 中定义

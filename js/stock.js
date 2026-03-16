@@ -27,8 +27,8 @@ function renderStockPage() {
 
         const icon = document.createElement('img');
         icon.src = MATERIAL_ICONS[mat] || DEFAULT_ICON;
-        icon.style.width = '24px';
-        icon.style.height = '24px';
+        icon.style.width = '60px';
+        icon.style.height = '60px';
         icon.style.objectFit = 'contain';
         nameRow.appendChild(icon);
 

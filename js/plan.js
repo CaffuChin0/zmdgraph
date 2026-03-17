@@ -17,7 +17,6 @@ function renderPlanPage() {
     // 渲染结果
     displayPlanResults(farmResults, missing);
 }
-
 // 从缺少行单元格获取缺少的材料数量
 function getMissingMaterials() {
     const missing = {};
@@ -51,6 +50,14 @@ function displayPlanResults(farmItems, needs) {
     let html = `
         <h2>规划 - 体力计算</h2>
     `;
+
+    // 定义产出显示映射
+    const outputDisplayMap = {
+        "协议空间-干员经验（1~60级经验卡）": "高级作战记录×17",
+        "协议空间-干员经验（61~90级经验卡）": "高级认知载体×6 + 初级认知载体×8",
+        "协议空间·武器经验": "武器检查套组×16 + 武器检查装置×10"
+    };
+
     if (farmItems.length === 0) {
         html += '<p>缺少材料为0，无需刷取。</p>';
     } else {
@@ -70,10 +77,18 @@ function displayPlanResults(farmItems, needs) {
         farmItems.forEach(item => {
             const stamina = item.count * 80;
             totalStamina += stamina;
+
+            // 判断是否有自定义显示
+            let outputDisplay = outputDisplayMap[item.name];
+            if (!outputDisplay) {
+                // 默认拼接
+                outputDisplay = Object.entries(item.output).map(([k, v]) => `${k}×${v}`).join(' + ');
+            }
+
             html += `
                 <tr>
                     <td>${item.name}</td>
-                    <td>${Object.entries(item.output).map(([k,v]) => `${k}×${v}`).join(' + ')}</td>
+                    <td>${outputDisplay}</td>
                     <td>${item.count}</td>
                     <td>${stamina}</td>
                 </tr>

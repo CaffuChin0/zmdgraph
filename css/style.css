@@ -1,4 +1,4 @@
-/* 全局样式 */
+/* ========== 全局样式 ========== */
 body {
     font-family: 'Microsoft YaHei', sans-serif;
     margin: 20px;
@@ -55,20 +55,17 @@ button:hover {
     font-size: 13px;
 }
 
+/* ========== 培养表页面专用样式 ========== */
 .plan-table-wrapper {
     overflow-x: scroll !important;
-    overflow-y: auto !important;   /* 启用垂直滚动 */
-    max-height: 600px;            
-    position: relative;            /* 保持原有定位 */
+    overflow-y: auto !important;
+    max-height: 600px;
+    position: relative;
 }
-
-/* 表格容器（负责横向滚动） */
 .table-container {
     overflow-x: auto;
     max-width: 100%;
 }
-
-/* ========== 培养表专用样式 ========== */
 #planTable {
     table-layout: fixed;
     width: max-content;
@@ -76,8 +73,6 @@ button:hover {
     background: white;
     border: 1px solid #dee2e6;
 }
-
-/* 所有单元格基础样式 */
 #planTable th,
 #planTable td {
     padding: 8px;
@@ -88,16 +83,13 @@ button:hover {
     text-overflow: ellipsis;
     box-sizing: border-box;
 }
-
-/* 材料列最小宽度 */
 #planTable td[data-material] {
     min-width: 80px;
 }
 #planTable th[data-material] {
     min-width: 80px;
 }
-
-/* 特殊行背景（由行提供） */
+/* 特殊行背景 */
 .inventory-row {
     background: #fff3cd;
 }
@@ -108,54 +100,39 @@ button:hover {
     background: #d1ecf1;
     font-weight: bold;
 }
-
-/* 库存行单元格背景 */
 .inventory-row th,
 .inventory-row td {
     background-color: #fff3cd !important;
-    border-color: #fff3cd !important;   /* 新增 */
+    border-color: #fff3cd !important;
 }
-/* 缺少行单元格背景 */
 .missing-row th,
 .missing-row td {
     background-color: #f8d7da !important;
     border-color: #f8d7da !important;
 }
-/* 合计行单元格背景 */
 .total-row th,
 .total-row td {
     background-color: #d1ecf1 !important;
     border-color: #d1ecf1 !important;
 }
-/* 标题行（第一行）单元格背景 */
 #planTable thead tr:first-child th,
 #planTable thead tr:first-child td {
     background-color: #e9ecef !important;
     border-color: #e9ecef !important;
 }
-/* 普通计划行默认背景为白色 */
 #planTable tbody tr {
     background: white;
 }
-
-/* 表头单元格垂直固定 */
 #planTable thead {
     position: sticky;
     top: 0;
     z-index: 9;
 }
-
-/* 标题行（第一行）背景色单独设置 */
-#planTable thead tr:first-child th,
-#planTable thead tr:first-child td {
-    background-color: #e9ecef !important;
-}
 .night-mode #planTable thead tr:first-child th,
 .night-mode #planTable thead tr:first-child td {
     background-color: #3a3a3a !important;
 }
-
-/* 第1列：头像 */
+/* 固定前几列 */
 #planTable th:nth-child(1), #planTable td:nth-child(1) {
     position: sticky;
     left: 0;
@@ -164,7 +141,6 @@ button:hover {
     min-width: 80px;
     max-width: 80px;
 }
-/* 第2列：移除 */
 #planTable th:nth-child(2), #planTable td:nth-child(2) {
     position: sticky;
     left: 80px;
@@ -173,7 +149,6 @@ button:hover {
     min-width: 70px;
     max-width: 70px;
 }
-/* 第3列：完成 */
 #planTable th:nth-child(3), #planTable td:nth-child(3) {
     position: sticky;
     left: 150px;
@@ -182,7 +157,6 @@ button:hover {
     min-width: 80px;
     max-width: 80px;
 }
-/* 第4列：隐藏 */
 #planTable th:nth-child(4), #planTable td:nth-child(4) {
     position: sticky;
     left: 230px;
@@ -191,7 +165,6 @@ button:hover {
     min-width: 60px;
     max-width: 60px;
 }
-/* 第5列：干员 */
 #planTable th:nth-child(5), #planTable td:nth-child(5) {
     position: sticky;
     left: 290px;
@@ -200,7 +173,6 @@ button:hover {
     min-width: 100px;
     max-width: 100px;
 }
-/* 第6列：升级项目 */
 #planTable th:nth-child(6), #planTable td:nth-child(6) {
     position: sticky;
     left: 390px;
@@ -209,7 +181,6 @@ button:hover {
     min-width: 150px;
     max-width: 150px;
 }
-/* 第7列：现等级 */
 #planTable th:nth-child(7), #planTable td:nth-child(7) {
     position: sticky;
     left: 540px;
@@ -218,7 +189,6 @@ button:hover {
     min-width: 80px;
     max-width: 80px;
 }
-/* 第8列：目标等级 */
 #planTable th:nth-child(8), #planTable td:nth-child(8) {
     position: sticky;
     left: 620px;
@@ -227,24 +197,16 @@ button:hover {
     min-width: 100px;
     max-width: 100px;
 }
-
-/* 库存输入框 */
 .stock-input {
     width: 60px;
 }
-
-/* 隐藏行（打勾） */
 .hidden-row td {
     text-decoration: line-through;
     color: #999;
 }
-
-/* 完成行透明度 */
 .completed-row td {
     opacity: 0.5;
 }
-
-/* 图片样式 */
 #planTable th img {
     width: 20px;
     height: 20px;
@@ -258,7 +220,7 @@ button:hover {
     border-radius: 4px;
 }
 
-/* 导航栏 */
+/* ========== 导航栏 ========== */
 .nav-bar {
     background: #fff;
     padding: 10px 20px;
@@ -277,7 +239,7 @@ button:hover {
     border-bottom: 2px solid #0056b3;
 }
 
-/* 页面容器 */
+/* ========== 页面容器 ========== */
 .page {
     display: none;
 }
@@ -285,16 +247,16 @@ button:hover {
     display: block;
 }
 
-/* 干员添加页面 */
+/* ========== 干员添加页面 ========== */
 #operatorProjectTable {
     border-collapse: collapse;
-    font-size: 20px; 
+    font-size: 20px;
     width: max-content;
-    margin: 0 auto; /* 居中 */
+    margin: 0 auto;
 }
 #operatorProjectTable th,
 #operatorProjectTable td {
-    border: 1px solid #e0e0e0; /* 浅色边框 */
+    border: 1px solid #e0e0e0;
     padding: 8px 12px;
     text-align: center;
     vertical-align: middle;
@@ -315,8 +277,6 @@ button:hover {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-
-/* 快捷按钮区域 */
 .quick-options {
     display: flex;
     flex-wrap: wrap;
@@ -339,8 +299,6 @@ button:hover {
     color: white;
     border-color: #007bff;
 }
-
-/* 需求材料表格 */
 #demandMaterials table {
     font-size: 14px;
     border-collapse: collapse;
@@ -354,7 +312,7 @@ button:hover {
     text-align: center;
 }
 #demandMaterials td:last-child {
-    text-align: left; /* 材料列左对齐以便查看图标 */
+    text-align: left;
 }
 #demandMaterials img {
     width: 20px;
@@ -363,7 +321,7 @@ button:hover {
     margin-right: 4px;
 }
 
-/* 武器添加需求表格样式 */
+/* ========== 武器添加页面 ========== */
 #weaponDemandMaterials table {
     border-collapse: collapse;
     width: 100%;
@@ -376,7 +334,7 @@ button:hover {
     text-align: center;
 }
 #weaponDemandMaterials td:last-child {
-    text-align: left; /* 材料列左对齐 */
+    text-align: left;
 }
 #weaponDemandMaterials img {
     width: 20px;
@@ -384,28 +342,15 @@ button:hover {
     vertical-align: middle;
     margin-right: 4px;
 }
-
-/* 移除数字输入框的上下箭头 */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-input[type=number] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-}
-
-/* 武器添加页面表格样式，与干员页面保持一致 */
 #weaponProjectTable {
     border-collapse: collapse;
-    font-size: 20px; 
+    font-size: 20px;
     width: max-content;
-    margin: 0 auto; /* 居中 */
+    margin: 0 auto;
 }
 #weaponProjectTable th,
 #weaponProjectTable td {
-    border: 1px solid #e0e0e0; /* 浅色边框 */
+    border: 1px solid #e0e0e0;
     padding: 8px 12px;
     text-align: center;
     vertical-align: middle;
@@ -426,476 +371,17 @@ input[type=number] {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-
-/* 移动端适配 */
-@media screen and (max-width: 768px) {
-    #planTable th:nth-child(1),
-    #planTable td:nth-child(1) {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10 !important;
-        width: 80px;
-        min-width: 80px;
-        max-width: 80px;
-        background: inherit !important;
-    }
-
-    /* 取消其他列锁定，避免渲染问题 */
-    #planTable th:nth-child(2),
-    #planTable td:nth-child(2),
-    #planTable th:nth-child(3),
-    #planTable td:nth-child(3),
-    #planTable th:nth-child(4),
-    #planTable td:nth-child(4),
-    #planTable th:nth-child(5),
-    #planTable td:nth-child(5),
-    #planTable th:nth-child(6),
-    #planTable td:nth-child(6),
-    #planTable th:nth-child(7),
-    #planTable td:nth-child(7),
-    #planTable th:nth-child(8),
-    #planTable td:nth-child(8) {
-        position: static !important;
-        left: auto !important;
-        background: inherit !important;
-        z-index: auto !important;
-    }
-
-    /* 干员添加页面的项目表格容器 */
-    #operatorProjectTable {
-        font-size: 16px;
-    }
-    #operatorProjectTable input[type=number] {
-        width: 50px;
-        font-size: 14px;
-    }
-
-    /* 需求材料表格容器 */
-    #demandMaterials {
-        overflow-x: auto;
-    }
-    #demandMaterials table {
-        min-width: 600px;
-        font-size: 13px;
-    }
-    #demandMaterials td {
-        white-space: nowrap;
-        padding: 6px 4px;
-    }
-    #demandMaterials td:last-child {
-        white-space: normal;
-    }
-    #demandMaterials img {
-        width: 20px;
-        height: 20px;
-    }
-
-    /* 培养表容器 - 只允许横向滚动，垂直滚动由页面处理 */
-    .plan-table-wrapper {
-        overflow-x: auto !important;
-        overflow-y: visible !important;
-        -webkit-overflow-scrolling: touch;
-        width: 100%;
-    }
-
-    #planTable {
-        min-width: 800px;
-    }
-
-    /* 材料列表头保持可见 */
-    #planTable th[data-material] {
-        width: 60px;
-        min-width: 60px;
-        display: table-cell !important;
-    }
-
-    /* 材料列最小宽度，确保表格可横向滚动 */
-    #planTable td[data-material] {
-        min-width: 60px;
-    }
-
-    /* 强制父容器滚动 */
-    @media screen and (max-width: 768px) {
-        .table-container,
-        #page-table div[style*="overflow-x: auto"] {
-            overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch;
-        }
-        /* 可适当减小材料列宽度以显示更多列 */
-        #planTable td[data-material] {
-            min-width: 60px;
-        }
-    }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
-/* 干员添加总和表格样式 */
-.total-sum-row {
-    background-color: #d4edda !important; /* 浅绿 */
-    font-weight: bold;
-}
-.total-sum-row td {
-    background-color: #d4edda !important;
-}
-.night-mode .total-sum-row {
-    background-color: #2a5a2a !important; /* 深绿 */
-}
-.night-mode .total-sum-row td {
-    background-color: #2a5a2a !important;
-}
-
-/* 夜间模式变量 */
-.night-mode {
-    --bg-color: #1a1a1a;
-    --text-color: #e0e0e0;
-    --panel-bg: #2d2d2d;
-    --border-color: #444;
-    --table-bg: #2d2d2d;
-    --table-header-bg: #3a3a3a;
-    --special-row-bg-1: #3d3a2e; /* 库存行背景 */
-    --special-row-bg-2: #4a2e2e; /* 缺少行背景 */
-    --special-row-bg-3: #2e3a4a; /* 合计行背景 */
-    --input-bg: #3a3a3a;
-    --input-text: #e0e0e0;
-    --button-bg: #0056b3;
-    --button-hover: #003d80;
-    --link-color: #66b0ff;
-}
-
-/* 夜间模式 - 强制覆盖背景 */
-body.night-mode {
-    background-color: #1a1a1a !important;
-    color: #e0e0e0 !important;
-}
-
-body.night-mode .panel {
-    background-color: #2d2d2d !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-
-/* 标题和开关容器 */
-.night-mode div[style*="display: flex"] h1 {
-    color: #e0e0e0;
-}
-
-/* 面板背景 */
-.night-mode .panel {
-    background-color: #2d2d2d !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-
-/* 表格容器 */
-.night-mode #planTable,
-.night-mode #operatorProjectTable,
-.night-mode #demandMaterials table {
-    background-color: #2d2d2d;
-    border-color: #444;
-}
-
-.night-mode #planTable th,
-.night-mode #planTable td,
-.night-mode #operatorProjectTable th,
-.night-mode #operatorProjectTable td,
-.night-mode #demandMaterials th,
-.night-mode #demandMaterials td {
-    border-color: #444;
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-}
-
-/* 首页更新日志正文文字夜间模式 */
-.night-mode #page-home .panel h2,
-.night-mode #page-home .panel p,
-.night-mode #page-home .panel > div[style*="display: grid"] > div:not([style*="background"]) {
-    color: #e0e0e0 !important;
-}
-
-/* 表头特殊背景 */
-.night-mode #planTable thead th,
-.night-mode #operatorProjectTable th,
-.night-mode #demandMaterials th {
-    background-color: #3a3a3a !important;
-}
-
-/* 特殊行背景（库存、缺少、合计） */
-.night-mode .inventory-row {
-    background-color: #3d3a2e !important;
-}
-.night-mode .missing-row {
-    background-color: #4a2e2e !important;
-}
-.night-mode .total-row {
-    background-color: #2e3a4a !important;
-}
-
-.night-mode .inventory-row th,
-.night-mode .inventory-row td {
-    background-color: #3d3a2e !important;
-    border-color: #3d3a2e !important;
-}
-.night-mode .missing-row th,
-.night-mode .missing-row td {
-    background-color: #4a2e2e !important;
-    border-color: #4a2e2e !important;
-}
-.night-mode .total-row th,
-.night-mode .total-row td {
-    background-color: #2e3a4a !important;
-    border-color: #2e3a4a !important;
-}
-.night-mode #planTable thead tr:first-child th,
-.night-mode #planTable thead tr:first-child td {
-    background-color: #3a3a3a !important;
-    border-color: #3a3a3a !important;
-}
-
-/* 设置页面输入框夜间模式 */
-.night-mode #dailyStaminaInput,
-.night-mode #backupText {
-    background-color: #3a3a3a !important;
-    color: #e0e0e0 !important;
-    border-color: #555 !important;
-}
-
-/* 输入框 */
-.night-mode input,
-.night-mode select {
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    border-color: #555;
-}
-
-/* 按钮 */
-.night-mode button:not(#nightModeToggle) {
-    background-color: #0056b3;
-}
-.night-mode button:not(#nightModeToggle):hover {
-    background-color: #003d80;
-}
-
-/* 快捷按钮 */
-.night-mode .quick-btn {
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    border-color: #555;
-}
-.night-mode .quick-btn:hover {
-    background-color: #0056b3;
-    color: white;
-}
-
-/* 导航栏 */
-.night-mode .nav-bar {
-    background-color: #2d2d2d;
-    border-bottom: 1px solid #444;
-}
-.night-mode .nav-bar a {
-    color: #66b0ff;
-}
-.night-mode .nav-bar a.active {
-    color: #99ccff;
-    border-bottom-color: #99ccff;
-}
-
-/* 底部文字 */
-.night-mode .footer-note {
-    color: #aaa;
-}
-
-/* 材料图标保持原样或适当调暗 */
-.night-mode img {
-    opacity: 0.9;
-}
-
-/* 武器添加页面表格夜间模式 */
-.night-mode #weaponProjectTable th,
-.night-mode #weaponProjectTable td {
-    border-color: #444;
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-}
-.night-mode #weaponProjectTable th {
-    background-color: #3a3a3a !important;
-}
-.night-mode #weaponProjectTable td:first-child {
-    background-color: #3a3a3a !important;
-}
-.night-mode #weaponProjectTable input[type=number] {
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    border-color: #555;
-}
-
-.night-mode #weaponDemandMaterials th,
-.night-mode #weaponDemandMaterials td {
-    border-color: #444;
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-}
-.night-mode #weaponDemandMaterials th {
-    background-color: #3a3a3a !important;
-}
-
-/* 库存页面表格 */
-.stock-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(150px, 1fr));
-    gap: 12px;
-    max-width: 1000px;
-    margin: 0 auto 20px;
-}
-
-/* 卡片样式 */
-.stock-card {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 12px;
-    transition: box-shadow 0.2s;
-}
-.stock-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* 经验值只读文本 */
-.stock-card .exp-text {
-    display: block;
-    text-align: right;
-    padding: 8px 0;
-    font-size: 14px;
-    color: inherit;
-    background: none;
-    border: none;
-}
-.night-mode .stock-card .exp-text {
-    color: #e0e0e0;
-}
-
-/* 库存卡片内所有数值左对齐 */
-.stock-card input[type=number],
-.stock-card .exp-text {
-    text-align: left;
-}
-
-/* 夜间模式 */
-.night-mode .stock-card {
-    background: #2d2d2d;
-    border-color: #444;
-}
-.night-mode .stock-card input[type=number],
-.night-mode .stock-card .exp-display {
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    border-color: #555;
-}
-.night-mode .stock-card:hover {
-    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-}
-
-/* 规划页面表格 */
-.plan-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 14px;
-}
-.plan-table th,
-.plan-table td {
-    padding: 12px;
-    border: 1px solid #dee2e6;
-    text-align: center;
-}
-.plan-table th {
-    background-color: #f2f2f2;
-    font-weight: 600;
-}
-.plan-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-.plan-summary {
-    font-size: 16px;
-    padding: 10px;
-    background-color: #e2f0d9;
-    border-radius: 4px;
-}
-.night-mode .plan-table th {
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    border-color: #444;
-}
-.night-mode .plan-table td {
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-    border-color: #444;
-}
-.night-mode .plan-table tbody tr:nth-child(even) td {
-    background-color: #333;
-}
-.night-mode .plan-summary {
-    background-color: #2a5a2a;
-    color: #e0e0e0;
-}
-
-/* 库存手机端适配 */
-@media screen and (max-width: 600px) {
-    .stock-grid {
-        grid-template-columns: repeat(2, 1fr) !important; /* 小屏幕下改为2列 */
-        gap: 8px; /* 适当缩小间距 */
-    }
-    .stock-card {
-        padding: 8px; /* 缩小内边距 */
-    }
-    .stock-card input[type=number] {
-        width: 100%; /* 输入框宽度占满卡片 */
-        box-sizing: border-box;
-    }
-    .stock-card .exp-text {
-        text-align: left;
-        font-size: 13px; /* 略缩小字体 */
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .stock-grid {
-        grid-template-columns: repeat(1, 1fr) !important; /* 更窄屏幕下改为1列 */
-    }
-}
-
-#planTable thead {
-    background: transparent;
-}
-
-/* 为计划行中的前8列设置白色背景，防止透出 */
-#planTable tbody td:nth-child(1),
-#planTable tbody td:nth-child(2),
-#planTable tbody td:nth-child(3),
-#planTable tbody td:nth-child(4),
-#planTable tbody td:nth-child(5),
-#planTable tbody td:nth-child(6),
-#planTable tbody td:nth-child(7),
-#planTable tbody td:nth-child(8) {
-    background-color: white !important;
-}
-/* 为计划行中的前8列设置夜间背景，防止透出 */
-.night-mode #planTable tbody td:nth-child(1),
-.night-mode #planTable tbody td:nth-child(2),
-.night-mode #planTable tbody td:nth-child(3),
-.night-mode #planTable tbody td:nth-child(4),
-.night-mode #planTable tbody td:nth-child(5),
-.night-mode #planTable tbody td:nth-child(6),
-.night-mode #planTable tbody td:nth-child(7),
-.night-mode #planTable tbody td:nth-child(8) {
-    background-color: #2d2d2d !important;
-}
-
-.night-mode #planTable td:nth-child(3) button {
-    background-color: #28a745;
-    color: white;
-}
-.night-mode #planTable td:nth-child(3) button:hover {
-    background-color: #1e7e34;
-}
-
-/* 批量表格 */
+/* ========== 批量添加页面 ========== */
 .batch-table {
     border-collapse: collapse;
     background: white;
@@ -918,25 +404,6 @@ body.night-mode .panel {
     border: 1px solid #ced4da;
     border-radius: 4px;
 }
-.night-mode .batch-table {
-    background: #2d2d2d;
-}
-.night-mode .batch-table th {
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    border-color: #444;
-}
-.night-mode .batch-table td {
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-    border-color: #444;
-}
-.night-mode .batch-table input {
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    border-color: #555;
-}
-/* 批量页面复选框容器 */
 .checklist-container {
     display: flex;
     flex-wrap: wrap;
@@ -963,17 +430,6 @@ body.night-mode .panel {
 .checklist-item input[type="checkbox"] {
     margin-right: 4px;
 }
-.night-mode .checklist-container {
-    background: #2d2d2d;
-    border-color: #444;
-}
-.night-mode .checklist-item {
-    background: #3a3a3a;
-    border-color: #555;
-    color: #e0e0e0;
-}
-
-/* 统一目标面板 */
 .batch-target-panel {
     background: #f8f9fa;
     padding: 15px;
@@ -1000,18 +456,6 @@ body.night-mode .panel {
     border-radius: 4px;
     border: 1px solid #ced4da;
 }
-.night-mode .batch-target-panel {
-    background: #2d2d2d;
-    border-color: #444;
-    color: #e0e0e0;
-}
-.night-mode .batch-target-panel input {
-    background: #3a3a3a;
-    border-color: #555;
-    color: #e0e0e0;
-}
-
-/* 需求结果面板 */
 .demand-result {
     background: #e2f0d9;
     padding: 20px;
@@ -1037,15 +481,6 @@ body.night-mode .panel {
     vertical-align: middle;
     margin-right: 5px;
 }
-.night-mode .demand-result {
-    background: #2a5a2a;
-    color: #e0e0e0;
-}
-.night-mode .demand-result h3 {
-    color: #a5d6a5;
-}
-
-/* 按钮样式补充 */
 .btn-info {
     background-color: #17a2b8;
 }
@@ -1058,9 +493,549 @@ body.night-mode .panel {
 .btn-success:hover {
     background-color: #1e7e34;
 }
+.demand-card {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
 
-/* 手机端优化 */
+/* ========== 库存页面 ========== */
+.stock-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 12px;
+    max-width: 1000px;
+    margin: 0 auto 20px;
+}
+.stock-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 12px;
+    transition: box-shadow 0.2s;
+}
+.stock-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stock-card .exp-text {
+    display: block;
+    text-align: right;
+    padding: 8px 0;
+    font-size: 14px;
+    color: inherit;
+    background: none;
+    border: none;
+}
+.stock-card input[type=number],
+.stock-card .exp-text {
+    text-align: left;
+}
+
+/* ========== 规划页面 ========== */
+.plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+}
+.plan-table th,
+.plan-table td {
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+.plan-table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+.plan-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+.plan-summary {
+    font-size: 16px;
+    padding: 10px;
+    background-color: #e2f0d9;
+    border-radius: 4px;
+}
+
+/* ========== 夜间模式 ========== */
+.night-mode {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --panel-bg: #2d2d2d;
+    --border-color: #444;
+    --table-bg: #2d2d2d;
+    --table-header-bg: #3a3a3a;
+    --special-row-bg-1: #3d3a2e;
+    --special-row-bg-2: #4a2e2e;
+    --special-row-bg-3: #2e3a4a;
+    --input-bg: #3a3a3a;
+    --input-text: #e0e0e0;
+    --button-bg: #0056b3;
+    --button-hover: #003d80;
+    --link-color: #66b0ff;
+}
+body.night-mode {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+body.night-mode .panel {
+    background-color: #2d2d2d !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.night-mode div[style*="display: flex"] h1 {
+    color: #e0e0e0;
+}
+.night-mode #planTable,
+.night-mode #operatorProjectTable,
+.night-mode #demandMaterials table,
+.night-mode .batch-table,
+.night-mode .plan-table {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+.night-mode #planTable th,
+.night-mode #planTable td,
+.night-mode #operatorProjectTable th,
+.night-mode #operatorProjectTable td,
+.night-mode #demandMaterials th,
+.night-mode #demandMaterials td,
+.night-mode .batch-table th,
+.night-mode .batch-table td,
+.night-mode .plan-table th,
+.night-mode .plan-table td {
+    border-color: #444;
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+.night-mode #planTable thead th,
+.night-mode #operatorProjectTable th,
+.night-mode #demandMaterials th,
+.night-mode .batch-table th,
+.night-mode .plan-table th {
+    background-color: #3a3a3a !important;
+}
+.night-mode .inventory-row {
+    background-color: #3d3a2e !important;
+}
+.night-mode .missing-row {
+    background-color: #4a2e2e !important;
+}
+.night-mode .total-row {
+    background-color: #2e3a4a !important;
+}
+.night-mode .inventory-row th,
+.night-mode .inventory-row td {
+    background-color: #3d3a2e !important;
+    border-color: #3d3a2e !important;
+}
+.night-mode .missing-row th,
+.night-mode .missing-row td {
+    background-color: #4a2e2e !important;
+    border-color: #4a2e2e !important;
+}
+.night-mode .total-row th,
+.night-mode .total-row td {
+    background-color: #2e3a4a !important;
+    border-color: #2e3a4a !important;
+}
+.night-mode #dailyStaminaInput,
+.night-mode #backupText {
+    background-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+    border-color: #555 !important;
+}
+.night-mode input,
+.night-mode select,
+.night-mode .batch-target-panel input {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+.night-mode button:not(#nightModeToggle) {
+    background-color: #0056b3;
+}
+.night-mode button:not(#nightModeToggle):hover {
+    background-color: #003d80;
+}
+.night-mode .quick-btn {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+.night-mode .quick-btn:hover {
+    background-color: #0056b3;
+    color: white;
+}
+.night-mode .nav-bar {
+    background-color: #2d2d2d;
+    border-bottom: 1px solid #444;
+}
+.night-mode .nav-bar a {
+    color: #66b0ff;
+}
+.night-mode .nav-bar a.active {
+    color: #99ccff;
+    border-bottom-color: #99ccff;
+}
+.night-mode .footer-note {
+    color: #aaa;
+}
+.night-mode img {
+    opacity: 0.9;
+}
+.night-mode #weaponProjectTable th,
+.night-mode #weaponProjectTable td,
+.night-mode #weaponDemandMaterials th,
+.night-mode #weaponDemandMaterials td {
+    border-color: #444;
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+.night-mode #weaponProjectTable th,
+.night-mode #weaponDemandMaterials th {
+    background-color: #3a3a3a !important;
+}
+.night-mode #weaponProjectTable td:first-child {
+    background-color: #3a3a3a !important;
+}
+.night-mode .stock-card {
+    background: #2d2d2d;
+    border-color: #444;
+}
+.night-mode .stock-card input[type=number],
+.night-mode .stock-card .exp-display {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+.night-mode .stock-card:hover {
+    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+}
+.night-mode .plan-summary {
+    background-color: #2a5a2a;
+    color: #e0e0e0;
+}
+.night-mode #planTable tbody td:nth-child(1),
+.night-mode #planTable tbody td:nth-child(2),
+.night-mode #planTable tbody td:nth-child(3),
+.night-mode #planTable tbody td:nth-child(4),
+.night-mode #planTable tbody td:nth-child(5),
+.night-mode #planTable tbody td:nth-child(6),
+.night-mode #planTable tbody td:nth-child(7),
+.night-mode #planTable tbody td:nth-child(8) {
+    background-color: #2d2d2d !important;
+}
+.night-mode #planTable td:nth-child(3) button {
+    background-color: #28a745;
+    color: white;
+}
+.night-mode #planTable td:nth-child(3) button:hover {
+    background-color: #1e7e34;
+}
+.night-mode .checklist-container {
+    background: #2d2d2d;
+    border-color: #444;
+}
+.night-mode .checklist-item {
+    background: #3a3a3a;
+    border-color: #555;
+    color: #e0e0e0;
+}
+.night-mode .batch-target-panel {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+.night-mode .demand-result {
+    background: #2a5a2a;
+    color: #e0e0e0;
+}
+.night-mode .demand-result h3 {
+    color: #a5d6a5;
+}
+.night-mode .toggle-button-group {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+.night-mode .toggle-button-group .toggle-label {
+    color: #e0e0e0;
+}
+.night-mode .toggle-switch .slider {
+    background-color: #3a3a3a;
+}
+.night-mode .toggle-switch input:checked + .slider {
+    background-color: #0b6b9f;
+}
+.night-mode .info-icon {
+    background-color: #aaa;
+}
+.night-mode .demand-card {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+/* ========== 公用辅助样式 ========== */
+#planTable thead {
+    background: transparent;
+}
+#planTable tbody td:nth-child(1),
+#planTable tbody td:nth-child(2),
+#planTable tbody td:nth-child(3),
+#planTable tbody td:nth-child(4),
+#planTable tbody td:nth-child(5),
+#planTable tbody td:nth-child(6),
+#planTable tbody td:nth-child(7),
+#planTable tbody td:nth-child(8) {
+    background-color: white !important;
+}
+.total-sum-row {
+    background-color: #d4edda !important;
+    font-weight: bold;
+}
+.total-sum-row td {
+    background-color: #d4edda !important;
+}
+.night-mode .total-sum-row {
+    background-color: #2a5a2a !important;
+}
+.night-mode .total-sum-row td {
+    background-color: #2a5a2a !important;
+}
+
+/* ========== 滚动条样式（通用） ========== */
+.batch-table-container,
+#batchOperatorTableContainer,
+#batchWeaponTableContainer,
+.plan-table-wrapper {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+.batch-table-container::-webkit-scrollbar,
+#batchOperatorTableContainer::-webkit-scrollbar,
+#batchWeaponTableContainer::-webkit-scrollbar,
+.plan-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+.batch-table-container::-webkit-scrollbar-thumb,
+#batchOperatorTableContainer::-webkit-scrollbar-thumb,
+#batchWeaponTableContainer::-webkit-scrollbar-thumb,
+.plan-table-wrapper::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 3px;
+}
+
+/* ========== iOS风格开关 ========== */
+.toggle-switch {
+    font-weight: normal;
+    min-width: auto;
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    vertical-align: middle;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e0e0e0;
+    transition: .2s;
+    border-radius: 28px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch .slider:before {
+    content: "";
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.toggle-switch input:checked + .slider {
+    background-color: #34c759;
+}
+.toggle-switch input:checked + .slider:before {
+    transform: translateX(24px);
+}
+.toggle-button-group {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    padding: 4px 12px;
+    gap: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.toggle-button-group .toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    user-select: none;
+}
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    font-style: italic;
+    cursor: help;
+    margin-left: 6px;
+    line-height: 1;
+    user-select: none;
+}
+
+/* ========== 自定义工具提示 ========== */
+.custom-tooltip {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    max-width: 250px;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 2147483647; /* 最大整数值，确保在最上层 */
+    pointer-events: none;
+    transition: opacity 0.2s;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.night-mode .custom-tooltip {
+    background-color: #555;
+    color: #e0e0e0;
+}
+
+/* ========== 移动端适配 ========== */
 @media screen and (max-width: 768px) {
+    /* 培养表头部换行 */
+    #page-table .panel > div[style*="display: flex"] {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    #page-table .panel > div[style*="display: flex"] > div:first-child {
+        width: 100%;
+        justify-content: space-between;
+    }
+    #page-table .panel > div[style*="display: flex"] > div:last-child {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        gap: 5px;
+    }
+    #page-table .panel > div[style*="display: flex"] button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    /* 原有培养表列固定调整 */
+    #planTable th:nth-child(1),
+    #planTable td:nth-child(1) {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 10 !important;
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
+        background: inherit !important;
+    }
+    #planTable th:nth-child(2),
+    #planTable td:nth-child(2),
+    #planTable th:nth-child(3),
+    #planTable td:nth-child(3),
+    #planTable th:nth-child(4),
+    #planTable td:nth-child(4),
+    #planTable th:nth-child(5),
+    #planTable td:nth-child(5),
+    #planTable th:nth-child(6),
+    #planTable td:nth-child(6),
+    #planTable th:nth-child(7),
+    #planTable td:nth-child(7),
+    #planTable th:nth-child(8),
+    #planTable td:nth-child(8) {
+        position: static !important;
+        left: auto !important;
+        background: inherit !important;
+        z-index: auto !important;
+    }
+
+    /* 干员添加表格 */
+    #operatorProjectTable {
+        font-size: 16px;
+    }
+    #operatorProjectTable input[type=number] {
+        width: 50px;
+        font-size: 14px;
+    }
+
+    /* 需求材料表格 */
+    #demandMaterials {
+        overflow-x: auto;
+    }
+    #demandMaterials table {
+        min-width: 600px;
+        font-size: 13px;
+    }
+    #demandMaterials td {
+        white-space: nowrap;
+        padding: 6px 4px;
+    }
+    #demandMaterials td:last-child {
+        white-space: normal;
+    }
+    #demandMaterials img {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* 培养表容器滚动 */
+    .plan-table-wrapper {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+    #planTable {
+        min-width: 800px;
+    }
+    #planTable th[data-material] {
+        width: 60px;
+        min-width: 60px;
+        display: table-cell !important;
+    }
+    #planTable td[data-material] {
+        min-width: 60px;
+    }
+
+    /* 批量页面优化 */
     .batch-target-panel label {
         display: block;
         margin-bottom: 10px;
@@ -1079,30 +1054,26 @@ body.night-mode .panel {
     }
 }
 
-/* 所有需要横向滚动的容器 */
-.batch-table-container,
-#batchOperatorTableContainer,
-#batchWeaponTableContainer,
-.plan-table-wrapper {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    overflow-x: auto;
-    padding-bottom: 5px; /* 给滚动条留一点空间 */
+/* 库存页面窄屏幕适配 */
+@media screen and (max-width: 600px) {
+    .stock-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+    .stock-card {
+        padding: 8px;
+    }
+    .stock-card input[type=number] {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .stock-card .exp-text {
+        text-align: left;
+        font-size: 13px;
+    }
 }
-
-/* 自定义滚动条样式 */
-.batch-table-container::-webkit-scrollbar,
-#batchOperatorTableContainer::-webkit-scrollbar,
-#batchWeaponTableContainer::-webkit-scrollbar,
-.plan-table-wrapper::-webkit-scrollbar {
-    height: 6px;
-    background: #f0f0f0;
-    border-radius: 3px;
-}
-.batch-table-container::-webkit-scrollbar-thumb,
-#batchOperatorTableContainer::-webkit-scrollbar-thumb,
-#batchWeaponTableContainer::-webkit-scrollbar-thumb,
-.plan-table-wrapper::-webkit-scrollbar-thumb {
-    background: #aaa;
-    border-radius: 3px;
+@media screen and (max-width: 400px) {
+    .stock-grid {
+        grid-template-columns: repeat(1, 1fr) !important;
+    }
 }

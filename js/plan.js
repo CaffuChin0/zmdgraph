@@ -12,11 +12,13 @@ function renderPlanPage() {
     if (!panel) return;
     // 从缺少行获取缺少的材料数量
     const missing = getMissingMaterials();
+    const allowBackward = document.getElementById('allowBackwardCheckbox')?.checked || false;
     // 计算刷取次数
-    const farmResults = calculateFarmTimes(missing);
+    const farmResults = calculateFarmTimes(missing, allowBackward);
     // 渲染结果
     displayPlanResults(farmResults, missing);
 }
+
 // 从缺少行单元格获取缺少的材料数量
 function getMissingMaterials() {
     const missing = {};
@@ -31,16 +33,88 @@ function getMissingMaterials() {
 }
 
 // 根据缺少数量计算各刷取项的次数
-function calculateFarmTimes(needs) {
+function calculateFarmTimes(needs, allowBackward) {
     return FARM_ITEMS.map(item => {
         let maxCount = 0;
-        for (let [mat, per] of Object.entries(item.output)) {
-            const need = needs[mat] || 0;
+
+        // 处理干员经验（1~60级）
+        if (item.name === "协议空间-干员经验（1~60级经验卡）") {
+            const need = needs["高级作战记录"] || 0;
             if (need > 0) {
-                const count = Math.ceil(need / per);
-                if (count > maxCount) maxCount = count;
+                maxCount = Math.ceil(need / 17);
             }
         }
+        // 处理干员经验（61~90级）
+        else if (item.name === "协议空间-干员经验（61~90级经验卡）") {
+            const needHigh = needs["高级认知载体"] || 0;
+            const needLow = needs["初级认知载体"] || 0;
+            if (needHigh > 0 || needLow > 0) {
+                if (allowBackward) {
+                    // 允许反向代偿：解不等式求最小n
+                    let n = 0;
+                    const highPer = 6;
+                    const lowPer = 8;
+                    const rate = 10; // 反向代偿比例
+                    while (true) {
+                        n++;
+                        if (highPer * n >= needHigh) {
+                            const remainingHigh = highPer * n - needHigh;
+                            const availableLowFromHigh = remainingHigh * rate;
+                            const totalLow = lowPer * n + availableLowFromHigh;
+                            if (totalLow >= needLow) {
+                                break;
+                            }
+                        }
+                    }
+                    maxCount = n;
+                } else {
+                    // 不允许反向代偿，分别取最大值
+                    const highCount = needHigh > 0 ? Math.ceil(needHigh / 6) : 0;
+                    const lowCount = needLow > 0 ? Math.ceil(needLow / 8) : 0;
+                    maxCount = Math.max(highCount, lowCount);
+                }
+            }
+        }
+        // 处理武器经验
+        else if (item.name === "协议空间·武器经验") {
+            const needHigh = needs["武器检查套组"] || 0;
+            const needLow = needs["武器检查装置"] || 0;
+            if (needHigh > 0 || needLow > 0) {
+                if (allowBackward) {
+                    let n = 0;
+                    const highPer = 16;
+                    const lowPer = 10;
+                    const rate = 10;
+                    while (true) {
+                        n++;
+                        if (highPer * n >= needHigh) {
+                            const remainingHigh = highPer * n - needHigh;
+                            const availableLowFromHigh = remainingHigh * rate;
+                            const totalLow = lowPer * n + availableLowFromHigh;
+                            if (totalLow >= needLow) {
+                                break;
+                            }
+                        }
+                    }
+                    maxCount = n;
+                } else {
+                    const highCount = needHigh > 0 ? Math.ceil(needHigh / 16) : 0;
+                    const lowCount = needLow > 0 ? Math.ceil(needLow / 10) : 0;
+                    maxCount = Math.max(highCount, lowCount);
+                }
+            }
+        }
+        // 其他刷取项
+        else {
+            for (let [mat, per] of Object.entries(item.output)) {
+                const need = needs[mat] || 0;
+                if (need > 0) {
+                    const count = Math.ceil(need / per);
+                    if (count > maxCount) maxCount = count;
+                }
+            }
+        }
+
         return { ...item, count: maxCount };
     }).filter(item => item.count > 0);
 }

@@ -493,12 +493,8 @@ function calculateBatchDemand() {
 
     // 每个干员/武器的单独需求
     demands.forEach(d => {
-        const section = document.createElement('div');
-        section.style.marginTop = '20px';
-        section.style.padding = '10px';
-        section.style.border = '1px solid #ddd';
-        section.style.borderRadius = '8px';
-        section.style.backgroundColor = '#f9f9f9';
+    const section = document.createElement('div');
+        section.className = 'demand-card';
         const title = d.type === 'operator' ? `🧑‍🤝‍🧑 ${d.name}` : `🗡️ ${d.name}`;
         const h5 = document.createElement('h5');
         h5.style.margin = '0 0 8px 0';

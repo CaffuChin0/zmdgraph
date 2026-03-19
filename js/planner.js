@@ -1,5 +1,24 @@
 // 培养表页面数据
 
+// 正向代偿规则：低级→高级
+const FORWARD_RULES = [
+    { low: "初级认知载体", high: "高级认知载体", rate: 10 },
+    { low: "初级作战记录", high: "中级作战记录", rate: 5 },
+    { low: "中级作战记录", high: "高级作战记录", rate: 10 },
+    { low: "武器检查单元", high: "武器检查装置", rate: 5 },
+    { low: "武器检查装置", high: "武器检查套组", rate: 10 }
+];
+
+// 反向代偿规则：高级→低级（仅在库存富余时使用）
+const BACKWARD_RULES = [
+    { high: "高级认知载体", low: "初级认知载体", rate: 10 },
+    { high: "高级作战记录", low: "中级作战记录", rate: 10 },
+    { high: "高级作战记录", low: "初级作战记录", rate: 50 },
+    { high: "中级作战记录", low: "初级作战记录", rate: 5 },
+    { high: "武器检查套组", low: "武器检查装置", rate: 10 },
+    { high: "武器检查装置", low: "武器检查单元", rate: 5 }
+];
+
 // 动态生成表头（包含图标）
 function renderTableHeader() {
     const theadRow = document.querySelector('#planTable thead tr');
@@ -170,27 +189,161 @@ function updateExpValues() {
     updateMissingRow();
 }
 
-// 更新缺少行
-function updateMissingRow() {
-    const totals = {};
-    MATERIAL_COLUMNS.forEach(mat => {
-        const totalCell = document.querySelector(`.total-value[data-material="${mat}"]`);
-        totals[mat] = totalCell ? parseFloat(totalCell.textContent) || 0 : 0;
+// 根据需求和库存，考虑低级材料代偿高级材料，计算最终缺少数量
+function calculateNetMissing(demand, stock) {
+    // 复制需求作为初始缺少
+    let missing = { ...demand };
+    // 复制剩余库存，用于代偿和直接抵扣
+    let remaining = { ...stock };
+
+    // 低级材料代偿高级材料
+    COMPENSATION_RULES.forEach(rule => {
+        const { low, high, lowPerHigh } = rule;
+        const needHigh = missing[high] || 0;
+        if (needHigh <= 0) return;
+        const haveLow = remaining[low] || 0;
+        if (haveLow <= 0) return;
+
+        // 可代偿高级的数量 = min(需要的高级数, floor(低级库存 / 合成率))
+        const compensateHigh = Math.min(needHigh, Math.floor(haveLow / lowPerHigh));
+        if (compensateHigh > 0) {
+            missing[high] -= compensateHigh;
+            remaining[low] -= compensateHigh * lowPerHigh;
+        }
     });
 
+    // 剩余库存直接抵扣对应材料
+    MATERIAL_COLUMNS.forEach(mat => {
+        if (missing[mat] > 0 && remaining[mat] > 0) {
+            const use = Math.min(missing[mat], remaining[mat]);
+            missing[mat] -= use;
+            remaining[mat] -= use;
+        }
+    });
+
+    // 确保所有缺少非负
+    MATERIAL_COLUMNS.forEach(mat => {
+        if (missing[mat] < 0) missing[mat] = 0;
+    });
+
+    return missing;
+}
+
+// 行级双向代偿计算
+function calculateRowNetDemand(rowMaterials, remainingStock, allowBackward) {
+    let netDemand = { ...rowMaterials };
+    let stock = { ...remainingStock };
+
+    // 1. 直接抵扣
+    MATERIAL_COLUMNS.forEach(mat => {
+        const need = netDemand[mat] || 0;
+        if (need > 0 && stock[mat] > 0) {
+            const use = Math.min(need, stock[mat]);
+            stock[mat] -= use;
+            netDemand[mat] -= use;
+        }
+    });
+
+    // 2. 正向代偿（低级→高级）
+    FORWARD_RULES.forEach(({ low, high, rate }) => {
+        let needHigh = netDemand[high] || 0;
+        if (needHigh <= 0) return;
+        let haveLow = stock[low] || 0;
+        if (haveLow <= 0) return;
+        const maxSynth = Math.floor(haveLow / rate);
+        const synth = Math.min(needHigh, maxSynth);
+        if (synth > 0) {
+            netDemand[high] -= synth;
+            stock[low] -= synth * rate;
+        }
+    });
+
+    // 3. 反向代偿（高级→低级），仅当允许时执行
+    if (allowBackward) {
+        BACKWARD_RULES.forEach(({ high, low, rate }) => {
+            // 先检查高级是否已满足（即 netDemand[high] 可能已归零或仍有需求）
+            let needHigh = netDemand[high] || 0;
+            let haveHigh = stock[high] || 0;
+            // 计算真正可用于代偿的高级数量：库存减去该行所需高级后剩余的部分
+            let extraHigh = haveHigh - needHigh;
+            if (extraHigh <= 0) return; // 没有多余高级，不进行反向代偿
+
+            let needLow = netDemand[low] || 0;
+            if (needLow <= 0) return;
+
+            // 多余高级可代偿的低级数量 = extraHigh * rate
+            const maxProvide = extraHigh * rate;
+            const provide = Math.min(needLow, maxProvide);
+            if (provide > 0) {
+                const consumeHigh = Math.ceil(provide / rate); // 实际消耗的高级数
+                netDemand[low] -= provide;
+                stock[high] -= consumeHigh; // 从库存中消耗这些高级
+                // 注意：这里没有修改 netDemand[high]，因为高级已经满足，消耗的是多余部分
+            }
+        });
+    }
+
+    // 4. 再次直接抵扣（安全处理）
+    MATERIAL_COLUMNS.forEach(mat => {
+        const need = netDemand[mat] || 0;
+        if (need > 0 && stock[mat] > 0) {
+            const use = Math.min(need, stock[mat]);
+            stock[mat] -= use;
+            netDemand[mat] -= use;
+        }
+    });
+
+    // 更新剩余库存
+    Object.keys(stock).forEach(mat => {
+        remainingStock[mat] = stock[mat];
+    });
+
+    // 确保非负
+    MATERIAL_COLUMNS.forEach(mat => {
+        if (netDemand[mat] < 0) netDemand[mat] = 0;
+    });
+
+    return netDemand;
+}
+
+function updateMissingRow() {
+    const allowBackward = document.getElementById('allowBackwardCheckbox')?.checked || false;
+
+    // 获取当前库存
+    const stocks = {};
     MATERIAL_COLUMNS.forEach(mat => {
         const stockElement = document.querySelector(`.stock-value[data-material="${mat}"]`);
-        let stock = 0;
         if (stockElement) {
             if (stockElement.tagName === 'INPUT') {
-                stock = parseFloat(stockElement.value) || 0;
+                stocks[mat] = parseFloat(stockElement.value) || 0;
             } else {
-                stock = parseFloat(stockElement.textContent) || 0;
+                stocks[mat] = parseFloat(stockElement.textContent) || 0;
             }
+        } else {
+            stocks[mat] = 0;
         }
-        const missing = Math.max(0, totals[mat] - stock);
+    });
+
+    // 复制一份库存用于逐行消耗
+    let remaining = { ...stocks };
+
+    // 初始化总净需求
+    const totalNetMissing = {};
+    MATERIAL_COLUMNS.forEach(mat => totalNetMissing[mat] = 0);
+
+    // 遍历所有未隐藏的计划行（按顺序）
+    planRows.forEach(row => {
+        if (row.hidden) return;
+        const rowNet = calculateRowNetDemand(row.materials, remaining, allowBackward);
+        MATERIAL_COLUMNS.forEach(mat => {
+            totalNetMissing[mat] += rowNet[mat] || 0;
+        });
+    });
+
+    // 更新缺少行单元格
+    MATERIAL_COLUMNS.forEach(mat => {
         const missingCell = document.querySelector(`.missing-value[data-material="${mat}"]`);
-        if (missingCell) missingCell.textContent = missing;
+        if (missingCell) missingCell.textContent = totalNetMissing[mat] || 0;
     });
 }
 
@@ -928,6 +1081,14 @@ function initPlanner() {
         return { materials: total, from: minFrom, to: maxTo };
     }
 
+    const backwardCheckbox = document.getElementById('allowBackwardCheckbox');
+    if (backwardCheckbox) {
+        backwardCheckbox.addEventListener('change', function() {
+            updateMissingRow();
+            refreshPlan();
+        });
+    }
+
     document.getElementById('removeAllBtn')?.addEventListener('click', function() {
         if (planRows.length === 0) {
             alert('没有计划可移除');
@@ -951,6 +1112,81 @@ function initPlanner() {
             refreshAllPlans();
         }
     });
+
+    // 从 localStorage 加载开关状态
+    const savedBackward = localStorage.getItem('zmdgraph_allow_backward') === 'true';
+    if (backwardCheckbox) {
+        backwardCheckbox.checked = savedBackward;
+        backwardCheckbox.addEventListener('change', function() {
+            localStorage.setItem('zmdgraph_allow_backward', this.checked);
+            updateMissingRow();
+            refreshPlan();
+        });
+    }
+
+    // 自定义提示信息（高级代偿说明）
+    const infoIcon = document.querySelector('.info-icon');
+    if (infoIcon) {
+        let tooltip = null;
+
+        function showTooltip(e) {
+            if (tooltip) return;
+            tooltip = document.createElement('div');
+            tooltip.className = 'custom-tooltip';
+            tooltip.textContent = '开启后允许用高级材料代替低级，但计算结果可能不够精确，建议结合实际情况参考。';
+            document.body.appendChild(tooltip);
+            
+            const rect = infoIcon.getBoundingClientRect();
+            const tooltipWidth = tooltip.offsetWidth;
+            const windowWidth = window.innerWidth;
+            
+            let left = rect.left + window.scrollX;
+            let top = rect.bottom + window.scrollY + 8;
+            
+            // 如果提示框超出屏幕右侧，向左移动
+            if (left + tooltipWidth > windowWidth) {
+                left = windowWidth - tooltipWidth - 10;
+            }
+            // 确保不超出左侧
+            if (left < 10) left = 10;
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.position = 'absolute';
+        }
+
+        function hideTooltip() {
+            if (tooltip) {
+                tooltip.remove();
+                tooltip = null;
+            }
+        }
+
+        // PC：鼠标移入/移出
+        infoIcon.addEventListener('mouseenter', showTooltip);
+        infoIcon.addEventListener('mouseleave', hideTooltip);
+
+        // 手机：点击切换
+        infoIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (tooltip) {
+                hideTooltip();
+            } else {
+                showTooltip(e);
+                // 点击外部隐藏
+                document.addEventListener('click', function handler(ev) {
+                    if (!tooltip) {
+                        document.removeEventListener('click', handler);
+                        return;
+                    }
+                    if (!tooltip.contains(ev.target) && ev.target !== infoIcon) {
+                        hideTooltip();
+                        document.removeEventListener('click', handler);
+                    }
+                });
+            }
+        });
+    }
 
     // 初次渲染
     renderTableHeader();

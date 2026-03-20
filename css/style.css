@@ -89,6 +89,49 @@ button:hover {
 #planTable th[data-material] {
     min-width: 80px;
 }
+
+/* 缺少材料汇总面板 */
+.missing-summary-panel {
+    background: #e2f0d9;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border-left: 4px solid #28a745;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.missing-summary-panel h3 {
+    margin: 0 0 15px 0;
+    color: #1e7e34;
+    font-size: 18px;
+}
+.missing-summary-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.missing-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    white-space: nowrap;
+}
+.missing-summary-item img {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+.night-mode .missing-summary-panel {
+    background: #2a5a2a;
+    color: #e0e0e0;
+}
+.night-mode .missing-summary-panel h3 {
+    color: #a5d6a5;
+}
+.night-mode .missing-summary-item {
+    color: #e0e0e0;
+}
+
 /* 特殊行背景 */
 .inventory-row {
     background: #fff3cd;

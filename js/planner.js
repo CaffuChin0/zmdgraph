@@ -1,5 +1,150 @@
 // 培养表页面数据
 
+let isEditing = false;
+
+function getActualProject(displayProject) {
+    if (displayProject.includes('角色等级-升级')) return '角色等级-升级';
+    if (displayProject.includes('精英阶段')) return '精英阶段';
+    if (displayProject.includes('装备适配')) return '装备适配';
+    return displayProject;
+}
+
+function toggleEditMode() {
+    const tbody = document.getElementById('planBody');
+    const rows = Array.from(tbody.children);
+    if (!isEditing) {
+        // 进入编辑模式
+        isEditing = true;
+        document.getElementById('addRowBtn').textContent = '💾 保存修改';
+        document.getElementById('refreshPlansBtn').disabled = true;
+        document.getElementById('removeAllBtn').disabled = true;
+        rows.forEach(row => {
+            const removeBtn = row.cells[1]?.querySelector('button');
+            const completeBtn = row.cells[2]?.querySelector('button');
+            const hideChk = row.cells[3]?.querySelector('input[type="checkbox"]');
+            if (removeBtn) removeBtn.disabled = true;
+            if (completeBtn) completeBtn.disabled = true;
+            if (hideChk) hideChk.disabled = true;
+        });
+        rows.forEach((row, index) => {
+            const curCell = row.cells[6];
+            const tarCell = row.cells[7];
+            const project = row.cells[5].textContent;
+            let curVal = curCell.textContent;
+            let tarVal = tarCell.textContent;
+            if (project.includes('装备适配')) {
+                const colorMap = { '绿装': 0, '蓝装': 1, '紫装': 2, '金装': 3 };
+                curVal = colorMap[curVal] !== undefined ? colorMap[curVal] : parseInt(curVal, 10) || 0;
+                tarVal = colorMap[tarVal] !== undefined ? colorMap[tarVal] : parseInt(tarVal, 10) || 0;
+            } else {
+                curVal = parseInt(curVal, 10) || 0;
+                tarVal = parseInt(tarVal, 10) || 0;
+            }
+            let maxVal = 90;
+            if (project.includes('技能') || project.includes('skill')) maxVal = 12;
+            else if (project.includes('精英阶段')) maxVal = 4;
+            else if (project.includes('装备适配')) maxVal = 3;
+            else if (project.includes('天赋') || project.includes('基建') || project.includes('信赖')) maxVal = 4;
+
+            const curInput = document.createElement('input');
+            curInput.type = 'number';
+            curInput.value = curVal;
+            curInput.min = 0;
+            curInput.max = maxVal;
+            curInput.classList.add('edit-cur');
+            curInput.dataset.index = index;
+            curInput.style.width = '60px';
+            curInput.style.boxSizing = 'border-box';
+            curInput.style.padding = '4px';
+            curInput.style.textAlign = 'center';
+            curInput.addEventListener('blur', function() {
+                let val = parseInt(this.value, 10);
+                if (isNaN(val)) this.value = this.min;
+                else if (val < this.min) this.value = this.min;
+                else if (val > this.max) this.value = this.max;
+            });
+            curCell.innerHTML = '';
+            curCell.appendChild(curInput);
+
+            const tarInput = document.createElement('input');
+            tarInput.type = 'number';
+            tarInput.value = tarVal;
+            tarInput.min = 0;
+            tarInput.max = maxVal;
+            tarInput.classList.add('edit-tar');
+            tarInput.dataset.index = index;
+            tarInput.style.width = '60px';
+            tarInput.style.boxSizing = 'border-box';
+            tarInput.style.padding = '4px';
+            tarInput.style.textAlign = 'center';
+            tarInput.addEventListener('blur', function() {
+                let val = parseInt(this.value, 10);
+                if (isNaN(val)) this.value = this.min;
+                else if (val < this.min) this.value = this.min;
+                else if (val > this.max) this.value = this.max;
+            });
+            tarCell.innerHTML = '';
+            tarCell.appendChild(tarInput);
+        });
+    } else {
+        // 保存修改
+        const newCurValues = [];
+        const newTarValues = [];
+        rows.forEach((row, index) => {
+            const curInput = row.cells[6].querySelector('input.edit-cur');
+            const tarInput = row.cells[7].querySelector('input.edit-tar');
+            if (curInput && tarInput) {
+                newCurValues[index] = parseInt(curInput.value, 10) || 0;
+                newTarValues[index] = parseInt(tarInput.value, 10) || 0;
+            } else {
+                newCurValues[index] = planRows[index].现等级;
+                newTarValues[index] = planRows[index].目标等级;
+            }
+        });
+        const updatedPlanRows = [];
+        for (let i = 0; i < planRows.length; i++) {
+            const row = planRows[i];
+            const newCur = newCurValues[i];
+            const newTar = newTarValues[i];
+            if (newCur === undefined || newTar === undefined) continue;
+            let newMaterials;
+            const project = row.项目;
+            const operator = row.干员;
+            const actualProject = getActualProject(project);
+            if (actualProject === '角色等级-升级') {
+                newMaterials = calculateLevelMaterials(operator, newCur, newTar);
+            } else {
+                newMaterials = calculateMaterials(operator, actualProject, newCur, newTar);
+            }
+            if (!newMaterials) {
+                alert(`重新计算材料失败，请检查数据。行：${operator} ${project}`);
+                return;
+            }
+            updatedPlanRows.push({
+                ...row,
+                现等级: newCur,
+                目标等级: newTar,
+                materials: newMaterials
+            });
+        }
+        // 先清空表格
+        tbody.innerHTML = '';
+        // 重新添加行
+        updatedPlanRows.forEach(p => {
+            addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true, p.hidden, true);
+        });
+        // 手动更新 planRows 数组
+        planRows = updatedPlanRows;
+        updateSummaryRows();
+        savePlansToStorage();
+
+        isEditing = false;
+        document.getElementById('addRowBtn').textContent = '✏️ 编辑计划';
+        document.getElementById('refreshPlansBtn').disabled = false;
+        document.getElementById('removeAllBtn').disabled = false;
+    }
+}
+
 // 正向代偿规则：低级→高级
 const FORWARD_RULES = [
     { low: "初级认知载体", high: "高级认知载体", rate: 10 },
@@ -306,6 +451,41 @@ function calculateRowNetDemand(rowMaterials, remainingStock, allowBackward) {
     return netDemand;
 }
 
+// 更新缺少材料汇总面板
+function updateMissingSummary() {
+    const panel = document.getElementById('missingSummaryPanel');
+    const contentDiv = document.getElementById('missingSummaryContent');
+    if (!panel || !contentDiv) return;
+
+    // 从缺少行获取数据
+    const missingItems = [];
+    MATERIAL_COLUMNS.forEach(mat => {
+        const cell = document.querySelector(`.missing-value[data-material="${mat}"]`);
+        if (cell) {
+            const val = parseFloat(cell.textContent) || 0;
+            if (val > 0) {
+                missingItems.push({ mat, val });
+            }
+        }
+    });
+
+    if (missingItems.length === 0) {
+        panel.style.display = 'none';
+        return;
+    }
+
+    // 生成内容
+    let html = '';
+    missingItems.forEach(item => {
+        html += `<div class="missing-summary-item">
+            <img src="${MATERIAL_ICONS[item.mat] || DEFAULT_ICON}" alt="${item.mat}">
+            <span>${item.mat} ×${item.val}</span>
+        </div>`;
+    });
+    contentDiv.innerHTML = html;
+    panel.style.display = 'block';
+}
+
 function updateMissingRow() {
     const allowBackward = document.getElementById('allowBackwardCheckbox')?.checked || false;
 
@@ -345,10 +525,12 @@ function updateMissingRow() {
         const missingCell = document.querySelector(`.missing-value[data-material="${mat}"]`);
         if (missingCell) missingCell.textContent = totalNetMissing[mat] || 0;
     });
+
+    updateMissingSummary();
 }
 
 // 添加计划行
-function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = false, hidden = false) {
+function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = false, hidden = false, skipPush = false) {
     const tbody = document.getElementById('planBody');
     const row = document.createElement('tr');
 
@@ -518,17 +700,19 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
 
     tbody.appendChild(row);
 
-    planRows.push({
-        干员: operator,
-        项目: project,
-        现等级: curLv,
-        目标等级: tarLv,
-        materials: MATERIAL_COLUMNS.reduce((acc, mat) => {
-            acc[mat] = materialObj[mat] || 0;
-            return acc;
-        }, {}),
-        hidden : hidden
-    });
+    if (!skipPush) {
+        planRows.push({
+            干员: operator,
+            项目: project,
+            现等级: curLv,
+            目标等级: tarLv,
+            materials: MATERIAL_COLUMNS.reduce((acc, mat) => {
+                acc[mat] = materialObj[mat] || 0;
+                return acc;
+            }, {}),
+            hidden: hidden
+        });
+    }
 
     updateSummaryRows();
     if (!skipSave) savePlansToStorage();
@@ -1013,9 +1197,8 @@ function initPlanner() {
         document.getElementById('targetLevel').value = '';
     });
 
-    document.getElementById('addRowBtn').addEventListener('click', function() {
-        alert("手动添加行功能暂未实现，请使用计算按钮添加。（别问，这个按钮纯用来占位的）");
-    });
+    document.getElementById('addRowBtn').textContent = '✏️ 编辑计划';
+    document.getElementById('addRowBtn').addEventListener('click', toggleEditMode);
 
     function calculateEliteWithRange(干员, 现等级, 目标等级, eliteDone) {
         let total = {};

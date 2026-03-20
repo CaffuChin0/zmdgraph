@@ -820,6 +820,11 @@ body.night-mode .panel {
     border-color: #444;
     color: #e0e0e0;
 }
+.night-mode #page-home .panel h2,
+.night-mode #page-home .panel p,
+.night-mode #page-home .panel > div[style*="display: grid"] > div:not([style*="background"]) {
+    color: #a5d6a5 !important;
+}
 
 /* ========== 公用辅助样式 ========== */
 #planTable thead {

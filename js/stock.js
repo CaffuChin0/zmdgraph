@@ -48,25 +48,23 @@ function renderStockPage() {
             card.appendChild(span);
         } else {
             const input = document.createElement('input');
-            input.type = 'number';
+            input.type = 'text';
+            input.inputMode = 'numeric';
             input.value = stockData[mat] || '0';
-            input.min = '0';
             input.className = 'stock-input stock-value';
             input.dataset.material = mat;
+
+            let saveTimer = null; // 防抖定时器
+
             input.addEventListener('input', function() {
-                if (_loading) return;
-                let val = parseInt(this.value, 10);
-                if (isNaN(val)) {
-                    this.value = 0;
-                } else {
-                    const min = parseInt(this.min, 10);
-                    if (val < min) this.value = min;
-                }
-                // 同步培养表库存输入框
-                const planInput = document.querySelector(`#planTable .stock-input[data-material="${mat}"]`);
-                if (planInput) {
-                    planInput.value = this.value;
-                }
+                // 1. 实时过滤非数字，只保留整数
+                let raw = this.value.replace(/[^\d]/g, '');
+                if (raw === '') raw = '0';
+                let val = parseInt(raw, 10);
+                if (isNaN(val)) val = 0;
+                this.value = val;
+
+                // 2. 实时更新经验值和缺少行（仅UI）
                 const expMaterials = ["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体",
                                     "武器检查单元","武器检查装置","武器检查套组"];
                 if (expMaterials.includes(mat)) {
@@ -74,10 +72,21 @@ function renderStockPage() {
                 } else {
                     updateMissingRow();
                 }
-                saveStockToStorage();
-                if (typeof refreshPlan === 'function') {
-                    refreshPlan();
-                }
+
+                // 3. 防抖保存：用户停止输入后 50ms 再保存
+                if (saveTimer) clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => {
+                    if (_loading) return;
+                    const finalVal = parseInt(this.value, 10);
+                    if (!isNaN(finalVal)) {
+                        // 同步培养表库存行
+                        const planInput = document.querySelector(`#planTable .stock-input[data-material="${mat}"]`);
+                        if (planInput) planInput.value = finalVal;
+                        saveStockToStorage();
+                        if (typeof refreshPlan === 'function') refreshPlan();
+                    }
+                    saveTimer = null;
+                }, 50);
             });
             card.appendChild(input);
         }
@@ -96,7 +105,13 @@ function saveStockToStorage() {
     const stockData = {};
     stockInputs.forEach(input => {
         const mat = input.dataset.material;
-        if (mat) stockData[mat] = input.value;
+        if (mat) {
+            let val = Number(input.value);
+            if (isNaN(val)) val = 0;
+            val = Math.floor(val);
+            stockData[mat] = val;
+            console.log(`保存 ${mat}: ${val}`); // 调试
+        }
     });
     localStorage.setItem('zmdgraph_stock', JSON.stringify(stockData));
 }
@@ -105,18 +120,27 @@ function loadStockFromStorage() {
     const stored = localStorage.getItem('zmdgraph_stock');
     if (!stored) return;
     _loading = true;
-    const stockData = JSON.parse(stored);
-    const stockInputs = document.querySelectorAll('.stock-input');
-    stockInputs.forEach(input => {
-        const mat = input.dataset.material;
-        if (mat && stockData.hasOwnProperty(mat)) {
-            input.value = stockData[mat];
-        }
-    });
-    updateExpValues();
-    updateMissingRow();
-    _loading = false;
-    refreshStockPage();
+    try {
+        const stockData = JSON.parse(stored);
+        const stockInputs = document.querySelectorAll('.stock-input');
+        stockInputs.forEach(input => {
+            const mat = input.dataset.material;
+            if (mat && stockData.hasOwnProperty(mat)) {
+                let val = Number(stockData[mat]);
+                if (isNaN(val)) val = 0;
+                val = Math.floor(val);
+                input.value = val;
+                console.log(`加载 ${mat}: ${val}`);
+            }
+        });
+        updateExpValues();
+        updateMissingRow();
+        refreshStockPage();
+    } catch (e) {
+        console.error('加载库存失败', e);
+    } finally {
+        _loading = false;
+    }
 }
 
 function refreshStockPage() {

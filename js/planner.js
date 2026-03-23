@@ -206,20 +206,24 @@ function createSummaryRows() {
             td.appendChild(span);
         } else {
             const input = document.createElement('input');
-            input.type = 'number';
+            input.type = 'text';
+            input.inputMode = 'numeric';
             input.value = '0';
             input.min = '0';
             input.className = 'stock-input stock-value';
             input.dataset.material = mat;
+
+            let saveTimer = null;
+
             input.addEventListener('input', function() {
-                let val = parseInt(this.value, 10);
-                if (isNaN(val)) {
-                    this.value = 0;
-                } else {
-                    const min = parseInt(this.min, 10);
-                    if (val < min) this.value = min;
-                }
-                if (_loading) return;
+                let raw = this.value.replace(/[^\d]/g, '');
+                if (raw === '') raw = '0';
+                let val = parseInt(raw, 10);
+                if (isNaN(val)) val = 0;
+                const min = parseInt(this.min, 10);
+                if (!isNaN(min) && val < min) val = min;
+                this.value = val;
+
                 const expMaterials = ["高级作战记录","中级作战记录","初级作战记录","高级认知载体","初级认知载体",
                                     "武器检查单元","武器检查装置","武器检查套组"];
                 if (expMaterials.includes(mat)) {
@@ -227,10 +231,19 @@ function createSummaryRows() {
                 } else {
                     updateMissingRow();
                 }
-                saveStockToStorage();
-                const stockInput = document.querySelector(`#page-stock .stock-input[data-material="${mat}"]`);
-                if (stockInput) stockInput.value = this.value;
-                if (typeof refreshPlan === 'function') refreshPlan();
+
+                if (saveTimer) clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => {
+                    if (_loading) return;
+                    const finalVal = parseInt(this.value, 10);
+                    if (!isNaN(finalVal)) {
+                        const stockInput = document.querySelector(`#page-stock .stock-input[data-material="${mat}"]`);
+                        if (stockInput) stockInput.value = finalVal;
+                        saveStockToStorage();
+                        if (typeof refreshPlan === 'function') refreshPlan();
+                    }
+                    saveTimer = null;
+                }, 50);
             });
             td.appendChild(input);
         }

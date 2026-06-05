@@ -3,6 +3,7 @@
 function initBatch() {
     // 填充干员复选框
     const opChecklist = document.getElementById('batchOperatorChecklist');
+    opChecklist.innerHTML = ''; // 清空
     CHARACTER_LIST.forEach(op => {
         const label = document.createElement('label');
         label.className = 'checklist-item';
@@ -12,6 +13,7 @@ function initBatch() {
 
     // 填充武器复选框
     const wpChecklist = document.getElementById('batchWeaponChecklist');
+    wpChecklist.innerHTML = ''; // 清空
     const weaponNames = [...new Set(WEAPON_LIST.map(w => w.name))].sort();
     weaponNames.forEach(name => {
         const label = document.createElement('label');

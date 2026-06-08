@@ -55,8 +55,9 @@ function initSettings() {
             planRows = backup.plans;
             const tbody = document.getElementById('planBody');
             tbody.innerHTML = '';
+            // 关键：传入 skipPush = true（第六个参数），避免重复添加
             planRows.forEach(p => {
-                addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true);
+                addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true, p.hidden, true);
             });
             // 恢复库存
             const stockData = backup.stock;

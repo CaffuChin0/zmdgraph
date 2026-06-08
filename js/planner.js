@@ -18,6 +18,7 @@ function toggleEditMode() {
         document.getElementById('addRowBtn').textContent = '💾 保存修改';
         document.getElementById('refreshPlansBtn').disabled = true;
         document.getElementById('removeAllBtn').disabled = true;
+        // 禁用行内操作按钮
         rows.forEach(row => {
             const removeBtn = row.cells[1]?.querySelector('button');
             const completeBtn = row.cells[2]?.querySelector('button');
@@ -26,20 +27,13 @@ function toggleEditMode() {
             if (completeBtn) completeBtn.disabled = true;
             if (hideChk) hideChk.disabled = true;
         });
+        // 为每行生成输入框，直接使用 planRows 中的值
         rows.forEach((row, index) => {
             const curCell = row.cells[6];
             const tarCell = row.cells[7];
             const project = row.cells[5].textContent;
-            let curVal = curCell.textContent;
-            let tarVal = tarCell.textContent;
-            if (project.includes('装备适配')) {
-                const colorMap = { '绿装': 0, '蓝装': 1, '紫装': 2, '金装': 3 };
-                curVal = colorMap[curVal] !== undefined ? colorMap[curVal] : parseInt(curVal, 10) || 0;
-                tarVal = colorMap[tarVal] !== undefined ? colorMap[tarVal] : parseInt(tarVal, 10) || 0;
-            } else {
-                curVal = parseInt(curVal, 10) || 0;
-                tarVal = parseInt(tarVal, 10) || 0;
-            }
+            const curVal = planRows[index].现等级;
+            const tarVal = planRows[index].目标等级;
             let maxVal = 90;
             if (project.includes('技能') || project.includes('skill')) maxVal = 12;
             else if (project.includes('精英阶段')) maxVal = 4;
@@ -88,56 +82,24 @@ function toggleEditMode() {
         });
     } else {
         // 保存修改
-        const newCurValues = [];
-        const newTarValues = [];
-        rows.forEach((row, index) => {
+        // 收集输入框的值并更新 planRows，同时恢复单元格文本
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
             const curInput = row.cells[6].querySelector('input.edit-cur');
             const tarInput = row.cells[7].querySelector('input.edit-tar');
             if (curInput && tarInput) {
-                newCurValues[index] = parseInt(curInput.value, 10) || 0;
-                newTarValues[index] = parseInt(tarInput.value, 10) || 0;
-            } else {
-                newCurValues[index] = planRows[index].现等级;
-                newTarValues[index] = planRows[index].目标等级;
+                const newCur = parseInt(curInput.value, 10) || 0;
+                const newTar = parseInt(tarInput.value, 10) || 0;
+                planRows[i].现等级 = newCur;
+                planRows[i].目标等级 = newTar;
+                // 恢复单元格文本
+                row.cells[6].textContent = newCur;
+                row.cells[7].textContent = newTar;
             }
-        });
-        const updatedPlanRows = [];
-        for (let i = 0; i < planRows.length; i++) {
-            const row = planRows[i];
-            const newCur = newCurValues[i];
-            const newTar = newTarValues[i];
-            if (newCur === undefined || newTar === undefined) continue;
-            let newMaterials;
-            const project = row.项目;
-            const operator = row.干员;
-            const actualProject = getActualProject(project);
-            if (actualProject === '角色等级-升级') {
-                newMaterials = calculateLevelMaterials(operator, newCur, newTar);
-            } else {
-                newMaterials = calculateMaterials(operator, actualProject, newCur, newTar);
-            }
-            if (!newMaterials) {
-                alert(`重新计算材料失败，请检查数据。行：${operator} ${project}`);
-                return;
-            }
-            updatedPlanRows.push({
-                ...row,
-                现等级: newCur,
-                目标等级: newTar,
-                materials: newMaterials
-            });
         }
-        // 先清空表格
-        tbody.innerHTML = '';
-        // 重新添加行
-        updatedPlanRows.forEach(p => {
-            addPlanRow(p.干员, p.项目, p.现等级, p.目标等级, p.materials, true, p.hidden, true);
-        });
-        // 手动更新 planRows 数组
-        planRows = updatedPlanRows;
-        updateSummaryRows();
-        savePlansToStorage();
-
+        // 刷新所有材料（会重新计算材料列并保存）
+        refreshAllPlans();
+        // 退出编辑模式
         isEditing = false;
         document.getElementById('addRowBtn').textContent = '✏️ 编辑计划';
         document.getElementById('refreshPlansBtn').disabled = false;

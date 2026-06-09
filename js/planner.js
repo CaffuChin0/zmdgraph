@@ -13,12 +13,11 @@ function toggleEditMode() {
     const tbody = document.getElementById('planBody');
     const rows = Array.from(tbody.children);
     if (!isEditing) {
-        // 进入编辑模式
+        // 进入编辑模式（保持不变）
         isEditing = true;
         document.getElementById('addRowBtn').textContent = '💾 保存修改';
         document.getElementById('refreshPlansBtn').disabled = true;
         document.getElementById('removeAllBtn').disabled = true;
-        // 禁用行内操作按钮
         rows.forEach(row => {
             const removeBtn = row.cells[1]?.querySelector('button');
             const completeBtn = row.cells[2]?.querySelector('button');
@@ -27,11 +26,11 @@ function toggleEditMode() {
             if (completeBtn) completeBtn.disabled = true;
             if (hideChk) hideChk.disabled = true;
         });
-        // 为每行生成输入框，直接使用 planRows 中的值
         rows.forEach((row, index) => {
             const curCell = row.cells[6];
             const tarCell = row.cells[7];
             const project = row.cells[5].textContent;
+            // 直接从 planRows 读取当前等级
             const curVal = planRows[index].现等级;
             const tarVal = planRows[index].目标等级;
             let maxVal = 90;
@@ -46,7 +45,6 @@ function toggleEditMode() {
             curInput.min = 0;
             curInput.max = maxVal;
             curInput.classList.add('edit-cur');
-            curInput.dataset.index = index;
             curInput.style.width = '60px';
             curInput.style.boxSizing = 'border-box';
             curInput.style.padding = '4px';
@@ -66,7 +64,6 @@ function toggleEditMode() {
             tarInput.min = 0;
             tarInput.max = maxVal;
             tarInput.classList.add('edit-tar');
-            tarInput.dataset.index = index;
             tarInput.style.width = '60px';
             tarInput.style.boxSizing = 'border-box';
             tarInput.style.padding = '4px';
@@ -82,28 +79,207 @@ function toggleEditMode() {
         });
     } else {
         // 保存修改
-        // 收集输入框的值并更新 planRows，同时恢复单元格文本
+        const newCurValues = [];
+        const newTarValues = [];
+        let hasInvalid = false;
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const curInput = row.cells[6].querySelector('input.edit-cur');
             const tarInput = row.cells[7].querySelector('input.edit-tar');
             if (curInput && tarInput) {
-                const newCur = parseInt(curInput.value, 10) || 0;
-                const newTar = parseInt(tarInput.value, 10) || 0;
-                planRows[i].现等级 = newCur;
-                planRows[i].目标等级 = newTar;
-                // 恢复单元格文本
-                row.cells[6].textContent = newCur;
-                row.cells[7].textContent = newTar;
+                let newCur = parseInt(curInput.value, 10) || 0;
+                let newTar = parseInt(tarInput.value, 10) || 0;
+                // 根据项目类型钳位
+                const project = row.cells[5].textContent;
+                let minVal = 0, maxVal = 90;
+                if (project.includes('等级') && (project.includes('角色') || project === '角色等级-升级')) {
+                    minVal = 1;
+                    maxVal = 90;
+                } else if (project.includes('技能') || project.includes('战技') || project.includes('普攻') || 
+                           project.includes('连携') || project.includes('大招') || project.includes('skill')) {
+                    minVal = 1;
+                    maxVal = 12;
+                } else if (project.includes('精英阶段')) {
+                    minVal = 0;
+                    maxVal = 4;
+                } else if (project.includes('装备适配')) {
+                    minVal = 0;
+                    maxVal = 3;
+                } else if (project.includes('天赋') || project.includes('基建') || project.includes('信赖')) {
+                    minVal = 0;
+                    maxVal = 4;
+                } else if (project.includes('武器突破')) {
+                    minVal = 0;
+                    maxVal = 4;
+                } else if (project.includes('武器等级')) {
+                    minVal = 1;
+                    maxVal = 90;
+                }
+                newCur = Math.min(Math.max(newCur, minVal), maxVal);
+                newTar = Math.min(Math.max(newTar, minVal), maxVal);
+                if (newCur >= newTar) {
+                    alert(`第 ${i+1} 行：现等级 ${newCur} 不能大于或等于目标等级 ${newTar}，请修改后重新保存。`);
+                    hasInvalid = true;
+                    break;
+                }
+                newCurValues[i] = newCur;
+                newTarValues[i] = newTar;
+            } else {
+                newCurValues[i] = planRows[i].现等级;
+                newTarValues[i] = planRows[i].目标等级;
             }
         }
-        // 刷新所有材料（会重新计算材料列并保存）
-        refreshAllPlans();
+        if (hasInvalid) return;
+
+        // 更新 planRows
+        for (let i = 0; i < planRows.length; i++) {
+            const oldRow = planRows[i];
+            const newCur = newCurValues[i];
+            const newTar = newTarValues[i];
+            if (newCur === undefined || newTar === undefined) continue;
+
+            oldRow.现等级 = newCur;
+            oldRow.目标等级 = newTar;
+
+            // 重新计算材料
+            let newMaterials = null;
+            const project = oldRow.项目;
+            if (project.includes('武器突破')) {
+                // 调用武器突破计算函数
+                newMaterials = calculateWeaponBreakMaterials(oldRow.干员, newCur, newTar);
+            } else if (project.includes('武器等级')) {
+                // 调用武器升级计算函数
+                const levelResult = calculateWeaponLevelMaterials(newCur, newTar);
+                if (levelResult) {
+                    const expMats = convertExpToMaterials(levelResult.武器经验值);
+                    newMaterials = {
+                        ...expMats,
+                        折金票: levelResult.折金票,
+                        武器经验值: levelResult.武器经验值
+                    };
+                }
+            } else if (project.includes('装备适配')) {
+                // 装备适配：显式累加折金票
+                let totalTicket = 0;
+                for (let lv = newCur; lv < newTar; lv++) {
+                    const row = DATABASE.find(r => 
+                        (r.干员 === "" || r.干员 === "通用") &&
+                        r.升级项目 === "装备适配" &&
+                        r.现等级 === lv &&
+                        r.目标等级 === lv + 1
+                    );
+                    if (row && row.折金票) totalTicket += row.折金票;
+                }
+                newMaterials = { 折金票: totalTicket };
+                MATERIAL_COLUMNS.forEach(mat => {
+                    if (newMaterials[mat] === undefined) newMaterials[mat] = 0;
+                });
+            } else {
+                const actualProject = getActualProject(project);
+                if (actualProject === '角色等级-升级') {
+                    newMaterials = calculateLevelMaterials(oldRow.干员, newCur, newTar);
+                } else {
+                    // 技能等需要提取技能名
+                    let skillName = project;
+                    const arrowIdx = skillName.indexOf('→');
+                    if (arrowIdx !== -1) {
+                        skillName = skillName.substring(0, arrowIdx).trim();
+                        const parts = skillName.split(' ');
+                        if (parts.length > 0 && !isNaN(parts[parts.length-1])) {
+                            skillName = parts.slice(0, -1).join(' ');
+                        }
+                    }
+                    newMaterials = calculateMaterials(oldRow.干员, skillName, newCur, newTar);
+                }
+            }
+            if (newMaterials) {
+                oldRow.materials = newMaterials;
+            } else {
+                console.warn(`材料计算失败: ${oldRow.干员} ${project} ${newCur}→${newTar}`);
+            }
+
+            // 重新生成项目显示名称
+            let newProject;
+            if (project.includes('武器突破')) {
+                newProject = `武器突破 ${newCur}→${newTar}`;
+            } else if (project.includes('武器等级')) {
+                newProject = `武器等级 ${newCur}→${newTar}`;
+            } else {
+                const actualProject = getActualProject(project);
+                if (actualProject === '角色等级-升级') {
+                    newProject = `角色等级-升级 ${newCur}→${newTar}`;
+                } else if (actualProject === '精英阶段') {
+                    newProject = `精英阶段 ${newCur}→${newTar}`;
+                } else if (actualProject === '装备适配') {
+                    const fromColor = mapAdaptLevelToColor(newCur);
+                    const toColor = mapAdaptLevelToColor(newTar);
+                    newProject = `装备适配 ${fromColor}→${toColor}`;
+                } else {
+                    let baseName = project;
+                    const arrowIdx = baseName.indexOf('→');
+                    if (arrowIdx !== -1) {
+                        baseName = baseName.substring(0, arrowIdx).trim();
+                        const parts = baseName.split(' ');
+                        if (parts.length > 0 && !isNaN(parts[parts.length-1])) {
+                            baseName = parts.slice(0, -1).join(' ');
+                        }
+                    }
+                    newProject = `${baseName} ${newCur}→${newTar}`;
+                }
+            }
+            oldRow.项目 = newProject;
+        }
+
+        // 更新表格显示
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const rowData = planRows[i];
+            for (let j = 0; j < MATERIAL_COLUMNS.length; j++) {
+                const cell = row.cells[8 + j];
+                if (cell) {
+                    cell.textContent = rowData.materials[MATERIAL_COLUMNS[j]] || 0;
+                }
+            }
+            row.cells[6].textContent = rowData.现等级;
+            row.cells[7].textContent = rowData.目标等级;
+            const project = rowData.项目;
+            if (project.includes('→')) {
+                const lastArrowIndex = project.lastIndexOf('→');
+                let splitIndex = -1;
+                for (let k = lastArrowIndex; k >= 0; k--) {
+                    if (project[k] === ' ' || project[k] === '(') {
+                        splitIndex = k;
+                        break;
+                    }
+                }
+                if (splitIndex !== -1) {
+                    const name = project.substring(0, splitIndex).trim();
+                    const level = project.substring(splitIndex).trim();
+                    row.cells[5].innerHTML = `<div>${name}</div><div>${level}</div>`;
+                } else {
+                    const parts = project.split(' ');
+                    if (parts.length > 1) {
+                        const level = parts.pop();
+                        const name = parts.join(' ');
+                        row.cells[5].innerHTML = `<div>${name}</div><div>${level}</div>`;
+                    } else {
+                        row.cells[5].textContent = project;
+                    }
+                }
+            } else {
+                row.cells[5].textContent = project;
+            }
+        }
+
         // 退出编辑模式
         isEditing = false;
         document.getElementById('addRowBtn').textContent = '✏️ 编辑计划';
         document.getElementById('refreshPlansBtn').disabled = false;
         document.getElementById('removeAllBtn').disabled = false;
+
+        updateSummaryRows();
+        savePlansToStorage();
+        if (typeof refreshPlan === 'function') refreshPlan();
     }
 }
 
@@ -505,7 +681,7 @@ function updateMissingRow() {
 }
 
 // 添加计划行
-function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = false, hidden = false, skipPush = false) {
+function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = false, hidden = false, skipPush = false, skipUpdate = false) {
     const tbody = document.getElementById('planBody');
     const row = document.createElement('tr');
 
@@ -612,14 +788,11 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
     tdOp.textContent = operator;
     row.appendChild(tdOp);
 
-    // 升级项目
+    // 升级项目：只要包含 → 就拆分为两行
     const tdProj = document.createElement('td');
     let projectDisplay = project;
-    // 尝试拆分为两行（仅当包含→且不是“角色等级-升级”时）
-    if (project.includes('→') && !project.startsWith('角色等级-升级')) {
-        // 找到最后一个 "→" 的位置
+    if (project.includes('→')) {
         const lastArrowIndex = project.lastIndexOf('→');
-        // 向前查找空格或左括号作为分隔点
         let splitIndex = -1;
         for (let i = lastArrowIndex; i >= 0; i--) {
             if (project[i] === ' ' || project[i] === '(') {
@@ -632,7 +805,6 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
             const level = project.substring(splitIndex).trim();
             tdProj.innerHTML = `<div>${name}</div><div>${level}</div>`;
         } else {
-            // 如果没有空格或括号，按最后一个空格分割（降级方案）
             const parts = project.split(' ');
             if (parts.length > 1) {
                 const level = parts.pop();
@@ -689,7 +861,10 @@ function addPlanRow(operator, project, curLv, tarLv, materialObj, skipSave = fal
         });
     }
 
-    updateSummaryRows();
+    // 仅在非跳过更新时调用
+    if (!skipUpdate) {
+        updateSummaryRows();
+    }
     if (!skipSave) savePlansToStorage();
     if (typeof refreshPlan === 'function') refreshPlan();
 }

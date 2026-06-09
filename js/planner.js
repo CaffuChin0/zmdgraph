@@ -13,7 +13,7 @@ function toggleEditMode() {
     const tbody = document.getElementById('planBody');
     const rows = Array.from(tbody.children);
     if (!isEditing) {
-        // 进入编辑模式（保持不变）
+        // 进入编辑模式
         isEditing = true;
         document.getElementById('addRowBtn').textContent = '💾 保存修改';
         document.getElementById('refreshPlansBtn').disabled = true;
@@ -30,7 +30,7 @@ function toggleEditMode() {
             const curCell = row.cells[6];
             const tarCell = row.cells[7];
             const project = row.cells[5].textContent;
-            // 直接从 planRows 读取当前等级
+            // 读取当前等级
             const curVal = planRows[index].现等级;
             const tarVal = planRows[index].目标等级;
             let maxVal = 90;
@@ -89,7 +89,7 @@ function toggleEditMode() {
             if (curInput && tarInput) {
                 let newCur = parseInt(curInput.value, 10) || 0;
                 let newTar = parseInt(tarInput.value, 10) || 0;
-                // 根据项目类型钳位
+                // 钳位
                 const project = row.cells[5].textContent;
                 let minVal = 0, maxVal = 90;
                 if (project.includes('等级') && (project.includes('角色') || project === '角色等级-升级')) {
@@ -131,7 +131,7 @@ function toggleEditMode() {
         }
         if (hasInvalid) return;
 
-        // 更新 planRows
+        // 更新
         for (let i = 0; i < planRows.length; i++) {
             const oldRow = planRows[i];
             const newCur = newCurValues[i];
@@ -159,7 +159,7 @@ function toggleEditMode() {
                     };
                 }
             } else if (project.includes('装备适配')) {
-                // 装备适配：显式累加折金票
+                // 装备适配
                 let totalTicket = 0;
                 for (let lv = newCur; lv < newTar; lv++) {
                     const row = DATABASE.find(r => 
@@ -179,7 +179,7 @@ function toggleEditMode() {
                 if (actualProject === '角色等级-升级') {
                     newMaterials = calculateLevelMaterials(oldRow.干员, newCur, newTar);
                 } else {
-                    // 技能等需要提取技能名
+                    // 提取技能名
                     let skillName = project;
                     const arrowIdx = skillName.indexOf('→');
                     if (arrowIdx !== -1) {
@@ -198,7 +198,7 @@ function toggleEditMode() {
                 console.warn(`材料计算失败: ${oldRow.干员} ${project} ${newCur}→${newTar}`);
             }
 
-            // 重新生成项目显示名称
+            // 重新生成名称
             let newProject;
             if (project.includes('武器突破')) {
                 newProject = `武器突破 ${newCur}→${newTar}`;
@@ -230,7 +230,7 @@ function toggleEditMode() {
             oldRow.项目 = newProject;
         }
 
-        // 更新表格显示
+        // 更新显示
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const rowData = planRows[i];

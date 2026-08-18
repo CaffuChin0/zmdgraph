@@ -55,6 +55,15 @@ button:hover {
     font-size: 13px;
 }
 
+.notice-panel {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
 /* ========== 培养表页面专用样式 ========== */
 .plan-table-wrapper {
     overflow-x: scroll !important;
@@ -824,6 +833,18 @@ body.night-mode .panel {
 .night-mode #page-home .panel p,
 .night-mode #page-home .panel > div[style*="display: grid"] > div:not([style*="background"]) {
     color: #a5d6a5 !important;
+}
+
+.night-mode .notice-panel {
+    background: #3d3a2e;
+    border-left-color: #ffc107;
+}
+.night-mode .notice-panel h2 {
+    color: #ffd966 !important;
+    border-bottom-color: #665d3e !important;
+}
+.night-mode .notice-panel p {
+    color: #e0e0e0 !important;
 }
 
 /* ========== 公用辅助样式 ========== */
